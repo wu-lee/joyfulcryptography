@@ -1,0 +1,530 @@
+\documentclass[10pt,dvipsnames,svgnames]{beamer}
+
+
+\mode<presentation>
+{
+  \usetheme{default}
+  \usecolortheme{default}
+  \usefonttheme{default}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[empty]
+  \setbeamertemplate{footline}[frame number]
+}
+
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamercolor{block title}{fg=black, bg=Grey!50}
+\setbeamercolor{block body}{fg=black, bg=Grey!25}
+\setbeamercolor{block title alerted}{fg=black, bg=Red!20}
+\setbeamercolor{block body alerted}{fg=black, bg=Red!15}
+\setbeamercolor{block title example}{fg=black, bg=SeaGreen!20}
+\setbeamercolor{block body example}{fg=black, bg=Green!15}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+
+\usepackage[lambda,advantage,operators,sets,adversary,landau,probability,notions,logic,ff,mm,primitives,events,complexity,asymptotics,keys]{cryptocode}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{shapes.geometric}
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\usepackage{scrextend} 
+
+\usepackage{fancybox}
+
+\usepackage{pgfpages}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{mdframed}
+\usepackage{xspace}
+\newcommand\Fontvi{\fontsize{5}{5.2}\selectfont}
+\definecolor{ao}{rgb}{0.0, 0.6, 0.0}
+\definecolor{bleu}{rgb}{0.2,0.2,0.7}
+
+\newcommand{\Inred}[1]{\textcolor{BrickRed}{#1}}
+\newcommand{\Inblue}[1]{\textcolor{bleu}{#1}}
+\newcommand{\Ingreen}[1]{\textcolor{SeaGreen}{#1}}
+
+\newcommand{\V}[1]{\texttt{V\textsubscript{{#1}}}\xspace}
+\newcommand{\Vs}[1]{$\texttt{V}'_\texttt{{#1}}$\xspace}
+\newcommand{\BB}{\texttt{BB}\xspace}
+\newcommand{\EA}{\texttt{EA}\xspace}
+\newcommand{\A}{\adv\xspace}
+\newcommand{\F}[1]{$\mathcal{F}_\textsc{{#1}}$\xspace}
+\renewcommand{\S}{\sdv\xspace}
+\newcommand{\E}{$\mathcal{E}$\xspace}
+\renewcommand{\P}{$P$\xspace}
+\newcommand{\D}{\ddv\xspace}
+
+\newcommand{\Pt}[2]{$\Pi^{{#2}}_{\textsc{{#1}}}$\xspace}
+
+\newcommand{\Enc}{\texttt{Enc}}
+\newcommand{\CheckShares}{\texttt{Check}}
+
+\newcommand{\ASetup}{\texttt{ASetup}}
+\newcommand{\AEval}{\texttt{AEval}}
+\newcommand{\AWit}{\texttt{AWit}}
+\newcommand{\AVer}{\texttt{AVer}}
+
+\newcommand{\CSetup}{\texttt{CSetup}}
+\newcommand{\CCommit}{\texttt{CCommit}}
+\newcommand{\COpen}{\texttt{COpen}}
+
+\newcommand{\SGen}{\texttt{SGen}}
+\newcommand{\SSign}{\texttt{SSign}}
+\newcommand{\SVer}{\texttt{SVer}}
+
+\newcommand{\SoKSetup}{\texttt{SoKSetup}}
+\newcommand{\SoKSign}{\texttt{SoKSign}}
+\newcommand{\SoKVer}{\texttt{SoKVer}}
+
+\newcommand{\TLEnc}{\texttt{TLEnc}}
+\newcommand{\TLDec}{\texttt{TLDec}}
+
+\newcommand{\frameindent}{\hspace*{\baselineskip}}
+
+\colorlet{gris}{black!50!white}
+\def\engris#1{\textcolor{gris}{#1}}
+
+\colorlet{jaune}{yellow!90!black}
+\def\enjaune#1{\textcolor{jaune!70!black}{#1}}
+
+\colorlet{vert}{green!45!black}
+\def\envert#1{\textcolor{vert}{#1}}
+
+\colorlet{bleu}{blue!70!black}
+\def\enbleu#1{\textcolor{bleu}{#1}}
+
+\colorlet{rouge}{red!75!black}
+\def\enrouge#1{\textcolor{rouge}{#1}}
+
+\newcommand{\rouge}{\only{\color{rouge}}}
+
+\xdefinecolor{violet}{rgb}{.5,0,.7}
+\def\enviolet#1{\textcolor{violet}{#1}}
+
+\xdefinecolor{violetft}{rgb}{0.199,0., 0.398}
+\def\envioletft#1{\textcolor{violetft}{#1}}
+
+\xdefinecolor{monbleu}{rgb}{0,.2,.54}
+\newcommand{\monbleu}{\only{\color{monbleu}}}
+
+\newcommand{\Ccal}{\mathcal{C}}
+\newcommand{\Kcal}{\mathcal{K}}
+\newcommand{\Mcal}{\mathcal{M}}
+\newcommand{\Tcal}{\mathcal{T}}
+\newcommand{\Xcal}{\mathcal{X}}
+
+\newcommand{\Aenc}{\mathsf{aenc}}
+\newcommand{\Pair}[2]{\langle{#1},{#2}\rangle}
+\newcommand{\Pk}[1]{\mathsf{pk}_{#1}}
+\newcommand{\Sk}[1]{\mathsf{sk}_{#1}}
+\newcommand{\h}{\mathsf{h}}
+
+\usepackage{wasysym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{ragged2e}
+%\usepackage{msc}
+\usepackage{color}
+\usepackage{stmaryrd}
+\usepackage{eurosym}
+
+
+
+\title{Cryptographic protocols}
+
+\author{{Myrto Arapinis} and {\bf Markulf Kohlweiss} \\
+  School of Informatics \\
+  University of Edinburgh}
+
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \maketitle
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Context}
+  Applications exchanging \enbleu{sensitive data} over a \enbleu{public network}:
+  \begin{itemize}
+  \item eBanking,
+  \item eCommerce,
+  \item eVoting,
+  \item ePassports,
+  \item Mobile phones,
+  \item \dots
+  \end{itemize}
+  \pause
+  \vspace{0.3cm}
+
+  A malicious agent can:
+  \begin{itemize}
+  \item record, alter, delete, insert, redirect, reorder, and reuse past or current messages, and inject new messages 
+
+    \enrouge{$\longrightarrow$ the network is the attacker}
+  \item control dishonest participants
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{The attacker controls the network (1)}
+
+  \begin{center}
+    \includegraphics[scale=0.5]{Images/TraceRoute1.pdf}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The attacker controls the network (2)}
+
+  \begin{center}
+    \includegraphics[scale=0.35]{Images/SnowdenRevelations.pdf}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The attacker controls the network (3)}
+  \medskip{}
+  \medskip{}
+  \bigskip{}
+
+  \begin{center}
+    \includegraphics[scale=0.5]{Images/TraceRoute2.pdf}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{All messages can be intercepted by an attacker (1)}
+
+    \begin{center}
+    \includegraphics[scale=0.85]{Images/LoginForm.pdf}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{All messages can be intercepted by an attacker (2)}
+
+  \begin{center}
+    \includegraphics[scale=0.5]{Images/WiresharkPasswordCapture.pdf}
+  \end{center}
+  \pause
+
+  \begin{block}{}
+    \enrouge{Man in the Middle (MitM) -} An attacker can \enrouge{intercept} packets, but also \enrouge{alter}, \enrouge{forge new}, and \enrouge{inject} packets
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{More complex systems needed...}
+
+  \onslide<2->{  
+    \[
+    \begin{array}[c]{ccc}
+      \begin{array}[c]{c}
+        \hspace{-0.75cm}\includegraphics<1->[scale=0.25]{Images/su-mei-tse.pdf}
+      \end{array}
+      &
+      \begin{array}[c]{c}
+        \hspace{-0.5cm}\xrightarrow[m=MAC(K_M, E(K_E, \text{Transfer 100 } \footnotesize{\geneuro{}} \text{ on Amazon's account}))]{e=E(K_E, \text{Transfer 100 } \footnotesize{\geneuro{}} \text{ on Amazon's account})}
+      \end{array}
+      &
+      \begin{array}[c]{c}
+        \hspace{-0.5cm}\includegraphics<1->[scale=0.4]{Images/RBS-logo.pdf}
+      \end{array}
+    \end{array}
+    \]}
+
+  \onslide<3->{
+    \enbleu{Replay attack}
+  
+    \[
+    \begin{array}[c]{ccccc}
+      \hspace{0.2cm}\begin{array}[c]{c}
+        \phantom{\includegraphics<1-2>[scale=0.25]{Images/su-mei-tse.pdf}}
+        \includegraphics<3->[scale=0.25]{Images/su-mei-tse.pdf}
+      \end{array}
+      & 
+      \hspace{0.2cm}\begin{array}[c]{c}
+        \xrightarrow[]{(e, m)}
+      \end{array}
+      &
+      \hspace{0.2cm}\begin{array}[c]{c}
+        \phantom{\includegraphics<1-2>[scale=0.25]{Images/intruder.pdf}}
+        \includegraphics<3->[scale=0.25]{Images/intruder.pdf}
+      \end{array}
+      &
+      \hspace{0.2cm}\begin{array}[c]{c}
+        \xrightarrow[]{(e, m)}
+        \\
+        \vdots \\
+        \xrightarrow[]{(e, m)}
+      \end{array}
+      &
+      \hspace{0.2cm}\begin{array}[c]{c}
+        \phantom{\includegraphics<1-2>[scale=0.4]{Images/RBS-logo.pdf}}
+        \includegraphics<3->[scale=0.4]{Images/RBS-logo.pdf}
+      \end{array}
+    \end{array}
+    \]}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{... to achieve more complex properties}
+    \vspace{0.2cm}
+    
+  \begin{itemize}
+
+  \item \enbleu{Confidentiality:} Some information should never be revealed to unauthorised entities.
+    \vspace{0.2cm}
+
+  \item \enbleu{Integrity}: Data should not be altered in an unauthorised manner since the time it was created, transmitted or stored by an authorised source.
+    \vspace{0.2cm}
+
+  \item \enbleu{Authentication:} Ability to know with certainty the identity of an communicating entity.
+    \vspace{0.2cm}
+
+  \item \enbleu{Anonymity:} The identity of the author of an action (\emph{e.g.} sending a message) should not be revealed.
+    \vspace{0.2cm}
+
+  \item \enbleu{Unlinkability:} An attacker should not be able to deduce whether different services are delivered to the same user
+    \vspace{0.2cm}
+
+  \item \enbleu{Non-repudiation:} The author of an action should not be able to deny having triggered this action.
+    \vspace{0.2cm}
+
+  \item \dots
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Cryptographic protocols}
+
+  \begin{block}{Cryptographic protocols}
+    Programs relying on \enbleu{cryptographic primitives} and whose goal is the establishment of \enbleu{``secure'' communications}.
+  \end{block}
+  \vspace{0.5cm}
+  \pause
+
+  
+  \begin{alertblock}{But!}
+    Many exploitable errors are due not to design errors in the primitives, but to the way they are used, \emph{i.e.} bad protocol design and buggy or not careful enough implementation
+  \end{alertblock}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Numerous deployed protocols are flawed...}
+  \hfill ... and end up in the news :(
+  \begin{center}
+    \vspace{-0.25cm}
+    \includegraphics[scale=0.45]{Images/news.pdf}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Logical attacks}
+  \begin{center}
+    \enrouge{Many of these attacks do not even break the crypto primitives!!}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example of a logical attack}
+
+  Assume a commutative symmetric encryption scheme 
+  \[
+  \{\{m\}_{\enrouge{k_1}}\}_{\enrouge{k_2}} = \{\{m\}_{\enrouge{k_2}}\}_{\enrouge{k_1}}
+  \]
+  where $\{m\}_k$ denotes the encryption of message $m$ under the key $k$
+
+  \envert{Example: stream ciphers}
+
+  \begin{center}
+    \footnotesize{
+    \begin{tabular}[t]{ccccccccccc}
+      & & & & & & \multicolumn{3}{c}{\onslide<6->{\enrouge{No authentication!}}} \\
+      \onslide<2->{$A$} & & \onslide<2->{$B$} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{$A$} & & \onslide<7->{\enrouge{$I$}} \\
+      \onslide<2->{\vline} & & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & & \onslide<7->{\vline} \\
+      \onslide<3->{\tiny{$\mathsf{new}\ K_A$}} & & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<8->{\tiny{$\mathsf{new}\ K_A$}} & & \onslide<7->{\vline} \\
+      \onslide<2->{\vline} & \onslide<3->{$\xrightarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\text{pin:3443}\}_{K_A}}$} & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & \onslide<8->{$\xrightarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\text{pin: 3443}\}_{K_A}}$} & \onslide<7->{\vline}\\
+      \onslide<2->{\vline} & & \onslide<3->{\tiny{$\mathsf{new}\ K_B$}} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & & \onslide<9->{\tiny{$\mathsf{new}\ K_I$}} \\
+      \onslide<2->{\vline} & \onslide<4->{$\xleftarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}$} & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & \onslide<9->{$\xleftarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\{\text{pin: 3443}\}_{K_A}\}_{K_I}}$} & \onslide<7->{\vline}\\
+      \onslide<2->{\vline} & \onslide<5->{$\xrightarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\text{pin: 3443}\}_{K_B}}$} & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & \onslide<10->{$\xrightarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\text{pin: 3443}\}_{K_I}}$} & \onslide<7->{\vline}\\
+    \end{tabular}}
+  \end{center}
+  \onslide<5->{\mbox{since $\{\{\text{pin: 3443}\}_{K_A}\}_{K_{B}} = \{\{\text{pin: 3443}\}_{K_{B}}\}_{K_{A}}$ by commutativity}}
+  
+\end{frame}
+
+\title{Authentication and key agreement protocols}
+\author{}
+\date{}
+
+\begin{frame}
+  \maketitle
+\end{frame}
+
+\begin{frame}
+  \frametitle{Authentication and key agreement}
+
+  \begin{itemize}
+  \item Long-term keys should be used as little as possible to reduce ``attack-surface''
+    \medskip{}
+  \item The use of a key should be restricted to a specific purpose
+
+    \envert{e.g. you shouldn't use the same RSA key both for encryption and signing}
+    \medskip{}
+
+  \item Public key algorithms tend to be computationally more expensive than symmetric key algorithms
+    \medskip{}
+  \item[\enrouge{$\rightsquigarrow$}] Long-term keys are used to establish short-term \enrouge{session keys}
+
+    \envert{\emph{e.g.} TLS over HTTP, AKA for 3G, BAC for epassports, \emph{etc.}}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Needham-Schroeder Public Key (NSPK)}
+
+  NSPK: authentication and key agreement protocol
+  \medskip{}
+
+  \begin{center}
+    \begin{tabular}[t]{ccccc}
+      $A$ & & $B$ \\
+      \vline & & \vline \\
+      \onslide<2->{\footnotesize{$\mathsf{new}\ N_A$}} & & \vline \\
+      \vline & \onslide<3->{$\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$} & \vline \\
+      \vline & & \onslide<4->{\footnotesize{$\mathsf{new}\ N_B$}} \\
+      \vline & \onslide<5->{$\xleftarrow[\hspace{4cm}]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline \\
+      \vline & \onslide<6->{$\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$} & \vline \\
+      \\
+      \onslide<7->{$^{k_{AB}\leftarrow \h(N_A, N_B)}$} & & \onslide<7->{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}
+    \end{tabular}
+  \end{center}
+  \footnotesize{\engris{[N. Roger, M. Schroeder, Michael. ``Using encryption for authentication in large networks of computers''. Communications of the ACM (December 1978)]}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{NSPK: security requirements}
+
+  \begin{itemize}
+  \item \enbleu{Authentication:} if Alice has completed the protocol, apparently with Bob, then
+    Bob must also have completed the protocol with Alice.
+    \medskip{}
+  \item \enbleu{Authentication:} If Bob has completed the  protocol, apparently with Alice, then Alice must have completed the protocol with Bob.  
+    \medskip{}
+  \item \enbleu{Confidentiality:} Messages sent encrypted with the agreed key ($k\leftarrow \h(N_A,NB)$) remain secret.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{NSPK: Lowe's attack on authentication}
+  \bigskip{}
+
+  \enrouge{Attack found 17 years after the publication of the NS protocol!!}
+  \pause
+  \small{
+  \begin{center}
+    \begin{tabular}[t]{ccccc}
+      \hspace{-1.5cm}$A$ & & $I$ & & $B$ \\
+      \hspace{-1.5cm}\vline & & \vline & & \vline \\
+      \hspace{-1.5cm}\onslide<2->{\footnotesize{$\mathsf{new}\ N_A$}} & & \vline & & \vline \\
+      \hspace{-1.5cm}\vline & \onslide<3->{$\xrightarrow[]{\Aenc(\Pk{I}, \Pair{N_A}{A})}$} & \vline & & \vline \\
+      \hspace{-1.5cm}\vline & & \vline & \onslide<4->{$\xrightarrow[]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$} & \vline \\
+      \hspace{-1.5cm}\vline & & \vline & & \onslide<5->{\footnotesize{$\mathsf{new}\ N_B$}} \\
+      \hspace{-1.5cm}\vline & & \vline & \onslide<6->{$\xleftarrow[]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline \\
+      \hspace{-1.5cm}\vline & \onslide<7->{$\xleftarrow[]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline & & \vline \\
+      \hspace{-1.5cm}\vline & \onslide<8->{$\xrightarrow[\phantom{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}]{\Aenc(\Pk{I}, \Pair{N_B}{A})}$} & \vline & & \vline \\
+      \hspace{-1.5cm}\vline & & \vline & \onslide<9->{$\xrightarrow[]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$} & \vline \\
+
+      \hspace{-0.8cm}\onslide<10->{\enrouge{$^{k_{AI}\leftarrow \h(N_A, N_B)}$}} & & \onslide<10->{\enrouge{$^{k_{AI}\leftarrow \h(N_A, N_B)}$}} & & \hspace{-1cm}\onslide<10->{\enrouge{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}} \\
+      \hspace{-0.8cm}& & \onslide<10->{\enrouge{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}}
+    \end{tabular}
+  \end{center}}
+\footnotesize{\engris{[G. Lowe. ``An attack on the Needham-Schroeder public key authentication protocol''. Information Processing Letters (November 1995)]}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{NSPK: Lowe's fix}
+
+  \begin{block}{The Needham-Schroeder-Lowe (NSL) protocol}
+    \begin{center}
+      \begin{tabular}[t]{ccccc}
+        $A$ & & $B$ \\
+        \vline & & \vline \\
+        \footnotesize{$\mathsf{new}\ N_A$} & & \vline \\
+        \vline & $\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$ & \vline \\
+        \vline & & \footnotesize{$\mathsf{new}\ N_B$} \\
+        \vline & $\xleftarrow[\hspace{4cm}]{\Aenc(\Pk{A}, \Pair{N_A}{\Pair{N_B}{\enrouge{B}}})}$ & \vline \\
+        \vline & $\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$ & \vline \\
+        \\
+        $^{k_{AB}\leftarrow \h(N_A, N_B)}$ & & $^{k_{AB}\leftarrow \h(N_A, N_B)}$
+      \end{tabular}
+    \end{center}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Forward secrecy}
+
+  \begin{itemize}
+  \item The NSL protocol is secure against an attacker that controls the network. 
+  \item What if the Alice's and Bob's private keys get compromised?
+  \item What if the government forces Alice and Bob to reveal their private keys?
+  \item Can we still protect confidentiality? 
+  \end{itemize}
+  \bigskip{}
+
+  \begin{block}{Forward secrecy}
+    A protocol ensures \enrouge{forward secrecy}, if even if long-term keys are compromised, past sessions of the protocol are still kept confidential, and this even if an attacker actively interferred.   
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Station-to-Station (StS) protocol}
+
+      \begin{center}
+      \begin{tabular}[t]{ccccc}
+        $A$ & & $B$ \\
+        \vline & & \vline \\
+        \onslide<2->{\footnotesize{$\mathsf{pick}\ p$}} & & \vline \\
+        \onslide<3->{\footnotesize{$x\xleftarrow[]{r}\mathbb Z_p$}} & & \vline \\
+        \vline & \onslide<4->{$\xrightarrow[\hspace{4cm}]{g,\ p,\ g^x}$} & \vline \\
+        \vline & & \onslide<5->{\footnotesize{$y\xleftarrow[]{r}\mathbb Z_p$}} \\
+        \vline & \onslide<6->{$\xleftarrow[\hspace{4cm}]{g^y, \envert{Cert_B}, \enbleu{E(g^{yx},} \envert{S(\mathsf{sk}_B}, (g^y, g^x)\envert{)}\enbleu{)}}$} & \vline \\
+        \vline & \onslide<7->{$\xrightarrow[\hspace{4cm}]{\envert{Cert_A}, \enbleu{E(g^{yx},} \envert{S(\mathsf{sk}_A}, (g^x, g^y)\envert{)}\enbleu{)}}$} & \vline \\
+      \end{tabular}
+    \end{center}
+    \onslide<2->{\begin{itemize}
+    \item where $p$ is a large prime
+    \item and $g$ a generator of $\mathbb Z_p^*$
+    \end{itemize}}
+  \onslide<8->{
+  \begin{block}{}
+    The StS ensures mutual authentication, key agreement, and forward secrecy
+  \end{block}}
+  
+\end{frame}
+
+\end{document}

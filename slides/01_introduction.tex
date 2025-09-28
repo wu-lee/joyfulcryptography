@@ -172,7 +172,8 @@
     \scalebox{0.7}{
     \includegraphics[scale=0.35]{images/joy.png}\includegraphics[scale=0.15]{images/katzlindell.png}}
   \end{center}
-\item Slides adapted from Myrto Arapinis and beamer style curtesy to Nadim Kobeissi \\ \url{https://appliedcryptography.page}
+\item Slides adapted from Myrto Arapinis and Nadim Kobeissi. \\
+Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
 \end{itemize}
 \end{frame}
 
@@ -200,6 +201,7 @@
   \end{block}
 \end{frame}
 
+\iffalse
 \begin{frame}{Cryptography is everywhere!}
 
   Cryptographic methods are powerful tools at the core of many security mechanisms used:
@@ -219,6 +221,110 @@
   \end{block}
   
 \end{frame}
+\fi
+
+\begin{frame}{Cryptography is everywhere}
+	\begin{columns}[c]
+		\begin{column}{0.5\textwidth}
+			\begin{itemize}[<+->]
+				\item Banking
+				\item Buying stuff from the store
+				\item Any digital payment system
+				\item Messaging (WhatsApp, Signal, iMessage, Telegram)
+				\item Voice calls
+				\item Government and military systems
+				\item SSH
+				\item VPN access
+				\item Visiting most websites (HTTPS)
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{itemize}[<+->]
+				\item Disk encryption
+				\item Cloud storage
+				\item Video conferencing
+				\item Unlocking your (newer) car
+				\item Identity card systems
+				\item Ticketing systems
+				\item DRM solutions
+				\item Private contact discovery
+				\item Cryptocurrencies
+				\item That Apple Photos feature that detects similar photos
+			\end{itemize}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{How it's made}
+	\bigimagewithcaption{fischer.png}{Fischer et al., The Challenges of Bringing Cryptography from Research Papers to Products: Results from an Interview Study with Experts, USENIX Security 2024}
+\end{frame}
+
+\begin{frame}{How it's made}
+	\begin{center}
+		\bigimagewithcaption{fischer-sectioned.png}{Fischer et al., The Challenges of Bringing Cryptography from Research Papers to Products: Results from an Interview Study with Experts, USENIX Security 2024}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Cryptographic building blocks}
+	\begin{columns}[c]
+		\begin{column}{0.5\textwidth}
+			\textbf{Components}
+			\begin{itemize}[<+->]
+				\item Cryptography manifests as a set of primitives, from which we
+				      build protocols intended to accomplish well-defined security goals.
+				\item \textbf{Primitives}: AES, RSA, SHA-2, DH\ldots
+				\item \textbf{Protocols}: TLS, Signal, SSH, FileVault 2, BitLocker\ldots
+			\end{itemize}
+		\end{column}
+
+		\begin{column}{0.5\textwidth}
+			\textbf{Examples}
+			\begin{itemize}[<+->]
+				\item \textbf{AES}: Symmetric encryption
+				      \begin{itemize}
+					      \item $\mathsf{Enc}(k, m) = c$, $\mathsf{Dec}(k, c) = m$.
+				      \end{itemize}
+				\item \textbf{SHA-2}: Hash function
+				      \begin{itemize}
+					      \item $\mathsf{H}(m) = h$.
+				      \end{itemize}
+				\item \textbf{Diffie-Hellman}: Public key agreement
+				      \begin{itemize}
+					      \item Allows two parties to agree on a secret key $k$.
+				      \end{itemize}
+			\end{itemize}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Cryptographic building blocks}
+	\begin{columns}[c]
+		\begin{column}{0.5\textwidth}
+			\textbf{Security goals}
+			\begin{itemize}[<+->]
+				\item \textbf{Confidentiality}: Data exchanged between Client and Server
+				      is only known to those parties.
+				\item \textbf{Authentication}: If Server receives data from Client,
+				      then Client sent it to Server.
+				\item \textbf{Integrity}: If Server modifies data owned by Client,
+				      Client can find out.
+			\end{itemize}
+		\end{column}
+
+		\begin{column}{0.5\textwidth}
+			\textbf{Examples}
+			\begin{itemize}[<+->]
+				\item \textbf{Confidentiality}: When you send a private message on Signal,
+				      only you and the recipient can read the content.
+				\item \textbf{Authentication}: When you receive an email from your boss,
+				      you can verify it actually came from them.
+				\item \textbf{Integrity}: Your computer can verify that software update
+				      downloads haven't been tampered with during transmission.
+			\end{itemize}
+		\end{column}
+	\end{columns}
+\end{frame}
+
 
 \begin{frame}{Important remark}
 
@@ -259,10 +365,9 @@
   \item Symmetric Encryption
   \item Asymmetric (public-key) Encryption
   \item Hash functions and Message Authentication Codes (MACs)
-  \item Digital Signatures
-  \item Public Key Infrastructure (PKI)
+  \item Digital Signatures and Public Key Infrastructure (PKI)
+  \item Post quantum security
   \end{itemize}
-  \bigskip
   \bigskip
   
   \begin{block}{We present only the rudiments of the topic:}

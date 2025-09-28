@@ -1,0 +1,309 @@
+%\documentclass[10pt,dvipsnames,svgnames]{beamer}
+\documentclass[aspectratio=169, lualatex, handout, 10pt,dvipsnames,svgnames]{beamer} %
+\makeatletter\def\input@path{{theme/}}\makeatother\usetheme{cipher}
+
+\title{Computer Security: Introduction}
+\author{Markulf Kohlweiss}
+\subject{Introduction to Applied Cryptography covering cryptographic primitives, protocols, security goals, and real-world applications from basic concepts to advanced topics like TLS and zero-knowledge proofs.}
+\keywords{cryptography, security, encryption, authentication, hash functions, TLS, protocols, provable security}
+\institute{University of Edinburgh, School of Informatics}
+\instituteimage{images/edu-white.png}
+\date{\today}
+\coversubtitle{INFR10067\\Fall 2025}
+\coverpartname{Cryptography}
+\covertopicname{Digital Signatures}
+\coverwebsite{}
+
+\mode<presentation>
+{
+  \usetheme{default}
+  \usecolortheme{default}
+  \usefonttheme{default}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[empty]
+  \setbeamertemplate{footline}[frame number]
+}
+
+\iffalse
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamercolor{block title}{fg=black, bg=Grey!50}
+\setbeamercolor{block body}{fg=black, bg=Grey!25}
+\setbeamercolor{block title alerted}{fg=black, bg=Red!20}
+\setbeamercolor{block body alerted}{fg=black, bg=Red!15}
+\setbeamercolor{block title example}{fg=black, bg=SeaGreen!20}
+\setbeamercolor{block body example}{fg=black, bg=Green!15}
+\fi
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+
+\usepackage[lambda,advantage,operators,sets,adversary,landau,probability,notions,logic,ff,mm,primitives,events,complexity,asymptotics,keys]{cryptocode}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{shapes.geometric}
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\usepackage{scrextend} 
+
+\usepackage{fancybox}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{mdframed}
+\usepackage{xspace}
+\newcommand\Fontvi{\fontsize{5}{5.2}\selectfont}
+\definecolor{ao}{rgb}{0.0, 0.6, 0.0}
+
+\newcommand{\Inred}[1]{\textcolor{BrickRed}{#1}}
+\newcommand{\Inblue}[1]{\textcolor{Blue}{#1}}
+\newcommand{\Ingreen}[1]{\textcolor{SeaGreen}{#1}}
+
+\newcommand{\V}[1]{\texttt{V\textsubscript{{#1}}}\xspace}
+\newcommand{\Vs}[1]{$\texttt{V}'_\texttt{{#1}}$\xspace}
+\newcommand{\BB}{\texttt{BB}\xspace}
+\newcommand{\EA}{\texttt{EA}\xspace}
+\newcommand{\A}{\adv\xspace}
+\newcommand{\F}[1]{$\mathcal{F}_\textsc{{#1}}$\xspace}
+\renewcommand{\S}{\sdv\xspace}
+\newcommand{\E}{$\mathcal{E}$\xspace}
+\renewcommand{\P}{$P$\xspace}
+\newcommand{\D}{\ddv\xspace}
+
+\newcommand{\Pt}[2]{$\Pi^{{#2}}_{\textsc{{#1}}}$\xspace}
+
+\newcommand{\Enc}{\texttt{Enc}}
+\newcommand{\CheckShares}{\texttt{Check}}
+
+\newcommand{\ASetup}{\texttt{ASetup}}
+\newcommand{\AEval}{\texttt{AEval}}
+\newcommand{\AWit}{\texttt{AWit}}
+\newcommand{\AVer}{\texttt{AVer}}
+
+\newcommand{\CSetup}{\texttt{CSetup}}
+\newcommand{\CCommit}{\texttt{CCommit}}
+\newcommand{\COpen}{\texttt{COpen}}
+
+\newcommand{\SGen}{\texttt{SGen}}
+\newcommand{\SSign}{\texttt{SSign}}
+\newcommand{\SVer}{\texttt{SVer}}
+
+\newcommand{\SoKSetup}{\texttt{SoKSetup}}
+\newcommand{\SoKSign}{\texttt{SoKSign}}
+\newcommand{\SoKVer}{\texttt{SoKVer}}
+
+\newcommand{\TLEnc}{\texttt{TLEnc}}
+\newcommand{\TLDec}{\texttt{TLDec}}
+
+\newcommand{\frameindent}{\hspace*{\baselineskip}}
+
+\colorlet{gris}{black!50!white}
+\def\engris#1{\textcolor{gris}{#1}}
+
+\colorlet{jaune}{yellow!90!black}
+\def\enjaune#1{\textcolor{jaune!70!black}{#1}}
+
+\colorlet{vert}{green!45!black}
+\def\envert#1{\textcolor{vert}{#1}}
+
+\colorlet{bleu}{blue!70!black}
+\def\enbleu#1{\textcolor{bleu}{#1}}
+
+\colorlet{rouge}{red!75!black}
+\def\enrouge#1{\textcolor{rouge}{#1}}
+
+\newcommand{\rouge}{\only{\color{rouge}}}
+
+\xdefinecolor{violet}{rgb}{.5,0,.7}
+\def\enviolet#1{\textcolor{violet}{#1}}
+
+\xdefinecolor{violetft}{rgb}{0.199,0., 0.398}
+\def\envioletft#1{\textcolor{violetft}{#1}}
+
+\xdefinecolor{monbleu}{rgb}{0,.2,.54}
+\newcommand{\monbleu}{\only{\color{monbleu}}}
+
+\newcommand{\Ccal}{\mathcal{C}}
+\newcommand{\Kcal}{\mathcal{K}}
+\newcommand{\Mcal}{\mathcal{M}}
+\newcommand{\Tcal}{\mathcal{T}}
+\newcommand{\Xcal}{\mathcal{X}}
+
+
+\title{Cryptography: digital signatures}
+
+\author{{ Myrto Arapinis} and {\bf Markulf Kohlweiss} \\
+  School of Informatics \\
+  University of Edinburgh}
+
+
+
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \maketitle
+\end{frame}
+
+\begin{frame}
+  \frametitle{Goal}
+  \vspace{-0.7cm}
+
+  \begin{block}{}
+    Data integrity and origin authenticity in the public-key setting
+  \end{block}
+
+  \begin{center}
+    \includegraphics[scale=0.2]{Images/digitsign.pdf}
+  \end{center}
+
+  \begin{itemize}
+  \item key generation algorithm: $G:\ \rightarrow \mathcal{K}\times \mathcal{K}$    
+  \item signing algorithm $S:\ \mathcal{K} \times \mathcal{M} \rightarrow \mathcal{S}$
+  \item verification algorithm $V:\ \mathcal{K} \times \mathcal {M} \times \mathcal{S} \rightarrow \{\top, \bot\}$
+  \item s.t. $\forall (sk, vk)\in G$, and $\forall m\in\mathcal{M}$, $V(vk, m, S(sk, m)) = \top$
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Advantages of digital signatures over MACs}
+
+  \begin{center}
+    \begin{tabular}{l}
+      \includegraphics[scale=0.4]{Images/integrity2.pdf}
+    \end{tabular}
+  \end{center}
+
+  \begin{block}{MACs}
+    \begin{itemize}
+    \item are not publicly verifiable (and so not transferable)
+
+      \envert{No one else, except Bob, can verify $t$.}
+
+    \item do not provide non-repudiation
+
+      \envert{$t$ is not bound to Alice's identity only. Alice could later claim she didn't compute $t$ herself. It could very well have been Bob since he also knows the key $k$. }
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+  
+\begin{frame}
+  \frametitle{Advantages of digital signatures over MACs}
+
+  \begin{center}
+    \begin{tabular}{l}
+      \includegraphics[scale=0.4]{Images/integrity1.pdf}
+    \end{tabular}
+  \end{center}
+
+
+  \begin{block}{Digital signatures}
+    \begin{itemize}
+    \item are \enbleu{publicly verifiable} - anyone can verify a signature 
+    \item are \enbleu{tansferable} - due to public verifiability 
+    \item provide \enbleu{non-repudiation} - if Alice signs a document with her secret key, she cannot deny it later
+    \end{itemize}
+  \end{block}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Security}
+
+  A good digital signature schemes should satisfy existential unforgeability.
+
+  \begin{block}{Existential unforgeability}
+    \begin{itemize}
+    \item Given $(m_1, S(sk, m_1))$, \dots, $(m_n, S(sk, m_n))$ (where $m_1$, \dots, $m_n$ chosen by the adversary)
+    \item It should be hard to compute a valid pair $(m, S(sk, m))$ without knowing $sk$ for any $m\not\in\{m_1, \dots, m_n\} $
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Textbook RSA signatures}
+
+    \begin{itemize}
+  \item $G_{RSA}() = (pk, sk)$ \hfill where $pk=(N, e)$ and $sk=(N,d)$
+
+    \hfill and $N = p\cdot q$ with $p, q$ random primes
+
+    \hfill and $e, d \in \mathbb Z$ st. $e\cdot d \equiv 1\ (\mathsf{mod}\ \phi(N))$
+    \smallskip{}
+    \pause
+
+  \item $\Mcal = \Ccal = \mathbb Z_N$
+   \smallskip{}
+    \pause
+
+  \item Signing: $S_{RSA}(sk, x) = (x, x^d\ (\mathsf{mod}\ N))$ \hfill where $pk=(N,e)$
+    \smallskip{}
+    \pause
+
+  \item Verifying: $V_{RSA}(pk, m, x) = \left\{
+    \begin{array}[c]{ll}
+      \top & \text{if } m = x^e\ (\mathsf{mod}\ N) \\
+      \bot & \text{otherwise}
+    \end{array}
+    \right.$
+    
+    where $sk=(N,d)$ 
+    \smallskip{}
+    \pause
+
+  \item st $\forall (pk, sk) = G_{RSA}()$, $\forall x$, $V_{RSA}(pk, x, S_{RSA}(sk, x)) = \top$
+    \pause
+
+    \underline{Proof:} exactly as proof of consistency of RSA encryption/decryption
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Problems with ``textbook RSA signatures''}
+
+  \begin{block}{Textbook RSA signatures are not secure}
+    The ``textbook RSA signature'' scheme \enrouge{does not provide existential unforgeability}
+  \end{block}
+
+  \begin{itemize}
+  \item Suppose Eve has two valid signatures $\sigma_1 = M_1^d \mod n$ and $\sigma_2 = M_2^d \mod n$ from Bob, on messages $M_1$ and $M_2$.
+  \item Then Eve can exploit the homomorphic properties of RSA and produce a new signature 
+    \pause
+    \[
+    \sigma = \sigma_1\cdot\sigma_2 \mod n=  M_1^d \cdot M_2^d \mod n = (M_1\cdot M_2)^d\mod n
+    \]
+    which is a valid signature from Bob on message $M_1 \cdot M_2$.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to use RSA for signatures}
+
+  \begin{block}{Solution}
+    Before computing the RSA function, apply a hash function \enrouge{H}. 
+  \end{block}
+
+  \begin{itemize}
+  \item Signing: $S_{RSA}(sk, x) = (x, \enrouge{H(}x\enrouge{)}^d\ (\mathsf{mod}\ N))$
+    \smallskip{} \pause
+
+  \item Verifying: $V_{RSA}(pk, m, x) = \left\{
+      \begin{array}[c]{ll}
+        \top & \text{if } \enrouge{H(}m\enrouge{)} = x^e\ (\mathsf{mod}\ N) \\
+        \bot & \text{otherwise}
+      \end{array}
+    \right.$
+  \end{itemize}
+
+
+\end{frame}
+
+\end{document}
