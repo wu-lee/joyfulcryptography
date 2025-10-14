@@ -1,5 +1,5 @@
 %\documentclass[10pt,dvipsnames,svgnames]{beamer}
-\documentclass[aspectratio=169, lualatex, handout, 10pt,dvipsnames,svgnames]{beamer} %
+\documentclass[aspectratio=169, lualatex, 10pt,dvipsnames,svgnames]{beamer} %
 \makeatletter\def\input@path{{theme/}}\makeatother\usetheme{cipher}
 
 \title{Computer Security: Introduction}
@@ -46,6 +46,7 @@
 \pgfdeclarelayer{background}
 \pgfsetlayers{background,main}
 
+\usepackage[absolute,overlay]{textpos} % put in preamble
 
 
 \usepackage{scrextend}
@@ -157,6 +158,8 @@
   \maketitle
 \end{frame}
 
+
+
 \begin{frame}{Introduction}
   \note{
     \begin{itemize}
@@ -174,11 +177,44 @@
 
   What about authenticity and integrity against an active attacker?
 
-  $\longrightarrow$ cryptographic hash functions and Message authentication codes
+  $\longrightarrow$ cryptographic hash functions and Message Authentication Codes (MAC)
 
   $\longrightarrow$ this lecture
 
+  \pause
+  \bigskip{}
+  Building block for constructing authenticated encryption schemes.
 
+\begin{textblock*}{5cm}(11cm,1cm)
+\includegraphics[width=5cm]{Images/armyknife.png}
+\end{textblock*}
+
+\end{frame}
+
+\begin{frame}{Recap}
+
+  Action items:
+  \begin{itemize}
+  \item[$\checkmark$] Request: Upload slides in advance (note that they might change before, and even after the lecture)
+  \item[?] Request: Exercises. A recital sheet for network security has been released. \\ I believe there will be one uploaded for cryptography soon. 
+  \item[?] Question: When are the office hours? 11:15 Mon and Fri, talk with me after lecture, especially MSc students. 
+  \item[?] Request: Challenges in modern cryptography? \\ 
+  Trusted and distributed AI. Digital and Decentralized Identity. Post-quantum.
+  \item[?] Request: More on internal structure of DES, Feistel networks.
+  \end{itemize}\medskip
+
+  We finished symmetric encryption last time, need to catch up on time a bit.
+
+\end{frame}
+
+\begin{frame}{Data Encryption Standard (DES), Details From Wikipedia}
+  \vspace{-7mm}
+    \begin{center}
+        \includegraphics[width=0.2\textwidth]{images/feistle-structure.png} \qquad
+        \includegraphics[width=0.3\textwidth]{images/DES-F-function.png}
+        \qquad
+        \includegraphics[width=0.3\textwidth]{images/DES-key-schedule.png}
+    \end{center}
 \end{frame}
 
 \begin{frame}{One-way functions (OWFs)}
@@ -219,7 +255,7 @@
 
   \frametitle{Collision-resistant functions (CRFs)}
 
-  A function is a CRF if it is hard to find two messages that get mapped to the same value threw this function
+  A function is a CRF if it is hard to find two messages that get mapped to the same value.
 
   \begin{definition}[Collision resistance]
     A function $f$ is collision resistant if there is no efficient algorithm that can find two messages $m_1$ and $m_2$ such that $f(m_1) = f(m_2)$
@@ -271,7 +307,7 @@
   \end{definition}
   \medskip{}
   
-  \envert{Examples: MD4, MD5, SHA-1, RIPEMD160, SHA-256, SHA-512, SHA-3\dots}\medskip
+  \envert{Examples: MD4, MD5, SHA-1, RIPEMD-160, SHA-256, SHA-512, SHA-3\dots}\medskip
 
   \enrouge{$\rightsquigarrow$In new projects use SHA-256 or SHA-512 or SHA-3}
 
@@ -302,7 +338,7 @@
   }
 
   \begin{itemize}
-  \item {\bf Commitments -} Allow a participant to commit to a value $v$ by publishing the hash $H(v)$ of this value, but revealing $v$ only later. \envert{Ex: electronic voting protocols, digital signatures, \dots}
+  \item {\bf Commitments -} Allow a participant to commit to value $v$ by publishing the hash $H(v)$, but revealing $v$ only later. \envert{Ex: electronic auction protocols, digital signatures,~\dots}
     \medskip{}
     \pause
 
@@ -319,7 +355,7 @@
     \medskip{}
     \pause
 
-  \item {\bf Building block of other crypto primitives -} Used to build MACs, block ciphers, PRG, \dots
+  \item {\bf Building block of other crypto primitives -} Used to build MACs, block ciphers, PRG, Bitcoin proof of work, Merkle trees, \dots
   \end{itemize}
 
 \end{frame}
@@ -355,11 +391,11 @@
     Let $H:\ \Mcal\rightarrow \{0, 1\}^n$ be a cryptographic hash
     function ($|\Mcal| >> 2^n$)
 
-    Generic algorithm to find a collision in time $O(2^{n/2})$ hashes:
+    Generic algorithm to find a collision in time $O(2^{n/2})$ hashes: \pause
     \begin{enumerate}
     \item Choose $2^{n/2}$ random messages in $\Mcal$: $m_1, \dots,
       m_{2^{n/2}}$
-    \item For $i=1, \dots, 2^{n/2}$ compute $t_i = H(m_i)$
+    \item For $i=1, \dots, 2^{n/2}$ compute $t_i = H(m_i)$ \pause
     \item If there exists a collision ($\exists i, j.\ t_i= t_j$)
     
       then return $(m_i, m_j)$
@@ -367,6 +403,8 @@
       else go back to 1
     \end{enumerate}
   \end{theorem}
+
+  \pause
 
   \underline{Birthday paradox} Let $r_1, \dots, r_\ell\in\{1, \dots, N\}$ be independent variables. For $\ell=1.2\times \sqrt N$, $Pr(\exists i\not=j.\ r_i=r_j)\ge \frac 1 2$\bigskip
 
@@ -379,8 +417,8 @@
 
 \end{frame}
 
+\iffalse
 \begin{frame}
-
   \frametitle{The Merkle-Damgard construction}
 \vspace{-0.7cm}
   \includegraphics[scale=0.4]{Images/MerkleDamgard.pdf}
@@ -399,6 +437,73 @@
   \envert{Example of MD constructions: MD5, SHA-1, SHA-2, \dots}
 
 \end{frame}
+\fi
+
+\begin{frame}
+  \frametitle{The Merkle-Damg\aa rd construction}
+\vspace{-0.2cm}
+\begin{tikzpicture}[
+  >={Stealth[length=3mm]},
+  box/.style={draw,thick,rounded corners,minimum width=10mm,minimum height=10mm,align=center},
+  lbl/.style={font=\small}
+]
+
+% Initial value
+\node (h0) {$IV$};
+
+% First compression
+\node[box, right=10mm of h0] (f1) {$h$};
+\node[right=10mm of f1] (h1) {$h_1$};
+\node[above=5mm of f1, lbl] (m1) {$m_1$};
+
+\draw[->] (h0) -- (f1.west);
+\draw[->] (m1) -- (f1.north);
+\draw[->] (f1.east) -- (h1);
+
+% Second compression
+\node[box, right=10mm of h1] (f2) {$h$};
+\node[right=10mm of f2] (h2) {$h_2$};
+\node[above=5mm of f2, lbl] (m2) {$m_2$};
+
+\draw[->] (h1) -- (f2.west);
+\draw[->] (m2) -- (f2.north);
+\draw[->] (f2.east) -- (h2);
+
+% Dots for middle blocks
+\node[right=5mm of h2] (dots) {$\cdots$};
+
+% Last compression
+\node[box, right=5mm of dots] (fk) {$h$};
+\node[right=10mm of fk] (hk) {$h_t$};
+\node[above=5mm of fk, lbl] (mt) {$m_t \| PB$};
+
+\draw (h2) -- (dots.west);
+\draw[->] (dots.east) -- (fk.west);
+\draw[->] (mt) -- (fk.north);
+\draw[->] (fk.east) -- (hk);
+
+% Output (hash)
+\node[right=10mm of hk] (digest) {$H(M)$};
+\draw[->] (hk) -- (digest);
+
+% Note
+\node[below=5mm of f2, lbl] (note) {Merkle--Damg\aa rd construction};
+\end{tikzpicture}
+
+  \begin{itemize}
+  \item Compression function: $h:\ \Tcal \times \Xcal \rightarrow \Tcal$
+  \item PB: $1000 \dots 0 || \mathsf{mes\text{-}len}$ (add extra block if needed) \enrouge{(different variants!)}
+  \end{itemize}
+  \medskip{}
+  \begin{theorem}
+    Let $H$ be built using the MD construction to the compression
+    function $h$. If $H$ admits a collision, so does $h$.
+  \end{theorem}
+  \medskip{}
+
+  \envert{Example of MD constructions: MD5, SHA-1, , RIPEMD-160, SHA-256, \dots, not SHA-3}
+
+\end{frame}
 
 \begin{frame}
 
@@ -409,6 +514,52 @@
 
   \begin{figure}[c]
     \centering
+
+\begin{tikzpicture}[
+  >={Stealth[length=3mm]},
+  box/.style={draw,thick,rounded corners,minimum width=28mm,minimum height=12mm,align=center},
+  smallnode/.style={draw,inner sep=1.5pt,circle,minimum size=6mm,align=center},
+  lbl/.style={font=\small}
+]
+
+% Nodes
+\node (hprev) {$h_{i-1}$};
+\node[box, right=25mm of hprev] (E) { $E_{m_i}$ \\ (block cipher) };
+\node[smallnode, right=25mm of E] (xor) {$\oplus$};
+\node[right=25mm of xor] (hcur) {$h_i$};
+
+% Key arrow (m_i)
+\node[above=10mm of E, lbl] (mi) {$m_i$};
+\draw[->] (mi) -- (E.north) node[midway, font=\small] {$\qquad$key};
+
+% Data arrows
+\draw[->] (hprev) -- (E.west) node[midway, above, font=\small] {plaintext / input};
+\draw[->] (E.east) -- (xor.west) node[midway, above, font=\small] {ciphertext};
+\draw[->] (hprev) |- ++(0.0,-12mm) -| (xor.south) node[midway, below, font=\small] {$h_{i-1}$ (feed-forward)};
+
+% Output
+\draw[->] (xor.east) -- (hcur.west);
+
+% Optional labels
+\node[below=12mm of E, lbl] (note) {Davies--Meyer: \quad $h_i = E_{m_i}(h_{i-1}) \oplus h_{i-1}$};
+
+\end{tikzpicture}
+    
+   % \caption*{\onslide<2->{\engris{Source: \url{https://en.wikipedia.org/wiki/One-way_compression_function}}}}
+  \end{figure}
+\end{frame}
+
+\iffalse
+\begin{frame}
+
+  \frametitle{Compression functions from block ciphers}
+
+  Let $E:\ \Kcal \times \{0, 1\}^n \rightarrow \{0, 1\}^n$ be a block cipher
+  \bigskip
+
+  \begin{figure}[c]
+    \centering
+
     \begin{tabular}{ccc}
       \hspace{-0.8cm}\onslide<2->{\includegraphics[scale=0.25]{Images/Davies-Meyer_hash.pdf}} & \hspace{1cm} & \onslide<3->{\includegraphics[scale=0.25]{Images/Miyaguchi-Preneel_hash.pdf}} \\
       \hspace{-0.8cm}\onslide<2->{Davies-Meyer} & \hspace{1cm} & \onslide<3->{Miyaguchi-Preneel}
@@ -417,14 +568,15 @@
     \caption*{\onslide<2->{\engris{Source: \url{https://en.wikipedia.org/wiki/One-way_compression_function}}}}
   \end{figure}
 \end{frame}
+\fi
 
 \begin{frame}
   \frametitle{Example of cryptographic hash function: SHA-256}
 
   \begin{itemize}
-  \item Structure: Merkle-Damgard
+  \item Structure: Merkle-Damg\aa rd
   \item Compression function: Davies-Meyer
-  \item Bloc cipher: SHACAL-2
+  \item Block cipher: SHACAL-2 \medskip
     \begin{center}
       \includegraphics[scale=0.4]{Images/SHA-256.pdf}
     \end{center}
@@ -450,7 +602,7 @@
       \end{array}
       &
       \begin{array}[c]{c}
-        \hspace{-0.5cm}\xrightarrow[]{e=E(K_E, \text{Transfer 100 } \footnotesize{\geneuro{}} \text{ on Bob's account})}
+        \hspace{-0.5cm}\xrightarrow[]{e=E(K, \text{Transfer 100 } \footnotesize{\geneuro{}} \text{ on Bob's account})}
       \end{array}
       &
       \begin{array}[c]{c}
@@ -460,12 +612,14 @@
   \]
   \pause
   \begin{center}
-    \enrouge{What if the encryption scheme $E$ is the OTP - $e=K_E \oplus \text{Transfer 100 } \footnotesize{\geneuro{}} \text{ on Bob's account}$?}
+    \enrouge{What if the encryption scheme $E$ is the OTP? \qquad \qquad \ }
+
+    \qquad \;\; \enrouge{$e=\texttt{"Transfer 100 }{\footnotesize{\geneuro{}}}\texttt{ on Bob's account"} \oplus K$?}
   \end{center}
   \pause
-  \bigskip{}
+  \medskip{}
   
-  \[\hspace{-0.75cm}
+  \[\hspace{-0.65cm}
     \begin{array}[c]{ccccc}
       \begin{array}[c]{c}
         \phantom{\includegraphics<1-2>[scale=0.2]{Images/su-mei-tse.pdf}}
@@ -483,11 +637,11 @@
       \end{array}
       &
         \begin{array}[c]{c}
-          \xrightarrow[\enrouge{=E(K_E, \text{Transfer 100 } \footnotesize{\geneuro{}} \text{ on Eve's account})}]{\enrouge{e\oplus \text{0\dots0Bob0\dots0}\oplus \text{0\dots0Eve0\dots0}}}
+          \xrightarrow[\Large\enrouge{=E(K, \text{Transfer 100 } \footnotesize{\geneuro{}} \texttt{ on Eve's account})}]{\begin{matrix}\enrouge{e} \!\!\!\!\! & \enrouge{= \texttt{"Transfer 100 }{\footnotesize{\geneuro{}}}\texttt{ on Bob's account"} \oplus K } \\ & \;\quad \quad  \enrouge{\oplus \texttt{0\dots0Bob0\dots0}} \\ &\;\quad \quad \enrouge{\oplus \texttt{0\dots0Eve0\dots0}}\end{matrix}}
         \end{array}
       &
       \begin{array}[c]{c}
-        \hspace{-1.35cm}
+        \hspace{-0.5cm}
         \phantom{\includegraphics<1-2>[scale=0.3]{Images/RBS-logo.pdf}}
         \includegraphics<3->[scale=0.3]{Images/RBS-logo.pdf}
       \end{array}
@@ -499,23 +653,25 @@
 \begin{frame}
 
   \frametitle{Goal: message integrity}
-\vspace{-0.75cm}
+\vspace{-0.4cm}
   \note{
   \begin{tabular}{l}
     \includegraphics[scale=0.4]{Images/integrity2.pdf}
   \end{tabular}}
   
-  \begin{tabular}{l}
-    \includegraphics[scale=0.4]{Images/integrity1.pdf}
-  \end{tabular}
+  \begin{center}
+%  \begin{tabular}{l}
+    \includegraphics[scale=0.4]{Images/integrity2.pdf}
+%  \end{tabular}
+\end{center}
   \pause
 
-\vspace{-0.3cm}
+
   A MAC is a pair of algorithms $(S, V)$ defined over $(\Kcal, \Mcal, \Tcal)$:
   \begin{itemize}
   \item $S: \Kcal \times \Mcal\rightarrow \Tcal$
-  \item $V: \Kcal \times \Mcal \times \Tcal\rightarrow \{\top,\bot\}$
-  \item Consistency: $V(k, m, S(k, m)) = T$
+  \item $V: \Kcal \times \Mcal \times \Tcal\rightarrow \{0,1\}$
+  \item Correctness: $V(k, m, S(k, m)) = 1$
   \end{itemize}
   
   \begin{alertblock}{Unforgeability}
@@ -523,6 +679,7 @@
   \end{alertblock}
 \end{frame}
 
+\iffalse
 \begin{frame}
 
   \frametitle{File system protection}
@@ -545,6 +702,7 @@
   \end{itemize}
 
 \end{frame}
+\fi
 
 \begin{frame}
   \frametitle{Block ciphers and message integrity}
@@ -554,10 +712,17 @@
   \begin{itemize}
   \item $S(k, m) = E(k, m)$
   \item $V(k, m, t) =
+  %  \begin{array}[t]{l}
+  %    \mathsf{if}\ m = D(k, t) \\
+  %    \mathsf{then\ return}\ 1 \\
+  %    \mathsf{else\ return}\ 0
+  %  \end{array}
+  %  $ \pause 
+  %  \quad I actually prefer \qquad $V(k, m, t) =
     \begin{array}[t]{l}
-      \mathsf{if}\ m = D(k, t) \\
-      \mathsf{then\ return}\ \top \\
-      \mathsf{else\ return}\ \bot
+      \mathsf{if}\ t = E(k, m) \\
+      \mathsf{then\ return}\ 1 \\
+      \mathsf{else\ return}\ 0
     \end{array}
     $
   \end{itemize}
@@ -572,6 +737,7 @@
 
 \end{frame}
 
+\iffalse
 \begin{frame}
 
   \frametitle{ECBC-MAC}
@@ -589,7 +755,94 @@
 
   \envert{Ex: 802.11i uses AES based ECBC-MAC}
 \end{frame}
+\fi
 
+\begin{frame}
+
+  \frametitle{ECBC-MAC}
+\vspace{-0.5cm}
+  
+  \begin{columns}[c]
+  % Left column with text
+  \begin{column}{0.44\textwidth}
+    \vspace{-3cm}
+    \begin{itemize}
+  \item $E:\ \Kcal\times \{0, 1\}^n\rightarrow \{0, 1\}^n$ a block cipher
+  \item $ECBC\text{-}MAC: \Kcal^2\times \{0, 1\}^*\rightarrow \{0, 1\}^n$
+  \end{itemize}
+  \enrouge{$\rightarrow$ the last encryption is crucial to avoid forgeries!! (Length extension attacks)}
+
+  \envert{Ex: 802.11i uses AES based ECBC-MAC}
+  \end{column}
+
+  % Right column with figure
+  \begin{column}{0.48\textwidth}
+    \centering
+     \begin{tikzpicture}[node distance=2cm, >=Stealth]
+
+  % Style definitions
+    \tikzstyle{block} = [draw,thick,rounded corners,minimum width=10mm,minimum height=10mm,align=center]
+
+%  \tikzstyle{block} = [draw, rectangle, minimum width=2cm, minimum height=1cm, align=center]
+  \tikzstyle{line} = [->, thick]
+
+  % Message blocks
+  \node (m1) {$m_1$};
+  \node[below=1.6cm of m1] (m2) {$m_2$};
+  \node[below=0.8cm of m2] (dots) {$\vdots$};
+  \node[below=0.8cm of dots] (mn) {$m_n$};
+
+  % Encryption blocks with key k1
+  \node[block, right=1.6cm of m1] (E1) {$E(k_1, \cdot)$};
+  \node[block, right=1.6cm of m2] (E2) {$E(k_1, \cdot)$};
+  \node[block, right=1.6cm of mn] (En) {$E(k_1, \cdot)$};
+
+  % Final encryption with k2
+  \node[block, right=0.8cm of En] (Ek2) {$E(k_2, \cdot)$};
+
+  % Tag
+  \node[right=0.8cm of Ek2] (tag) {$t$};
+
+  % Lines for CBC chaining
+  \draw[line] (m1) -- (E1);
+  \draw[line] (En) -- (Ek2);
+
+  % Final output
+  \draw[line] (Ek2) -- (tag);
+
+  % XOR symbols for chaining
+  \node[circle, draw, inner sep=0pt, minimum size=4mm, right=0.6cm of m2] (xor1) {$\oplus$};
+  \draw[line] (m2.east) -- (xor1.west);
+  \draw[line] (xor1.east) -- (E2.west);
+
+  \node[circle, draw, inner sep=0pt, minimum size=4mm, right=0.6cm of mn] (xor2) {$\oplus$};
+  \draw[line] (mn.east) -- (xor2.west);
+  \draw[line] (xor2.east) -- (En.west);
+
+  % Feed previous ciphertext into XORs
+    \node[below=0.6cm of E2] (bE2) {\ };
+
+  \draw[line] (E1.south) -- ++(0,-0.6) -| (xor1.north);
+  \draw[thick] (E2.south) -- (bE2); % -| (xor2.north);
+  \node[above=0.7cm of xor2.north] (axor2) {\ };
+  \draw[dotted,thick] (bE2) -- (axor2);
+  \draw[line]  (axor2) -- (xor2.north);
+
+\end{tikzpicture}
+  %  \captionof{figure}{An illustrative figure}
+  \end{column}
+
+\end{columns}
+
+   
+
+
+  
+\end{frame}
+
+
+
+\iffalse
 \begin{frame}
 
   \frametitle{PMAC}
@@ -608,6 +861,9 @@
   \engris{See also: \url{https://www.youtube.com/watch?v=gZiBYDX9Fpo}}
 \end{frame}
 
+\fi
+
+\iffalse
 \begin{frame}
 
   \frametitle{HMAC}
@@ -621,6 +877,97 @@
     
     \begin{center}
       \includegraphics[scale=0.3]{Images/HMAC.pdf}
+    \end{center}
+
+    
+  \envert{Ex: SSL, IPsec, SSH, \dots}
+
+\end{frame}
+\fi
+
+\begin{frame}
+
+  \frametitle{HMAC}
+\vspace{-0.4cm}
+    MAC built from cryptographic hash functions
+    \[
+    HMAC(k, m) = H(k\oplus OP ||H(k\oplus IP||m))
+    \]
+    $IP, OP$: publicly known padding constants
+
+    \vspace{-0.3cm}
+
+    \begin{center}
+     \begin{tikzpicture}[
+  >={Stealth[length=3mm]},
+  box/.style={draw,thick,rounded corners,minimum width=10mm,minimum height=10mm,align=center},
+  lbl/.style={font=\small}
+]
+
+% === First copy (top) ===
+\begin{scope}[yshift=25mm] % shift upward
+  % Initial value
+  \node (h0) {$\underbrace{IV}_{\text{fixed}}$};
+
+  % First compression
+  \node[box, right=7mm of h0] (f1) {$h$};
+  \node[right=10mm of f1] (h1) {$h_1$};
+  \node[above=5mm of f1, lbl] (m1) {$k \oplus IP$};
+
+  \draw[->] (h0) -- (f1.west);
+  \draw[->] (m1) -- (f1.north);
+  \draw[->] (f1.east) -- (h1);
+
+  % Second compression
+  \node[box, right=10mm of h1] (f2) {$h$};
+  \node[right=10mm of f2] (dots) {$\cdots$};
+  \node[above=5mm of f2, lbl] (m2) {$m_1$};
+
+  \draw[->] (h1) -- (f2.west);
+  \draw[->] (m2) -- (f2.north);
+  \draw (f2.east) -- (dots);
+
+  % Last compression
+  \node[box, right=10mm of dots] (fk) {$h$};
+  \node[above=5mm of fk, lbl] (mt) {$m_t \| PB$};
+  \node[below=5mm of fk, lbl] (mtb) {\ };
+
+
+  \draw (dots) -- (dots.west);
+  \draw[->] (dots.east) -- (fk.west);
+  \draw[->] (mt) -- (fk.north);
+  \draw[->] (fk.south) -- (mtb);
+\end{scope}
+
+
+% === Second copy (bottom) ===
+\begin{scope}[xshift=36mm]
+  % Initial value
+  \node (h0b) {$\underbrace{IV}_{\text{fixed}}$};
+
+  % First compression
+  \node[box, right=7mm of h0b] (f1b) {$h$};
+  \node[right=10mm of f1b] (h1b) {$h'_1$};
+  \node[above=5mm of f1b, lbl] (m1b) {$k \oplus OP$};
+
+  \draw[->] (h0b) -- (f1b.west);
+  \draw[->] (m1b) -- (f1b.north);
+  \draw[->] (f1b.east) -- (h1b);
+
+  % Second compression
+  \node[box, right=10mm of h1b] (f2b) {$h$};
+  \node[right=7mm of f2b] (h2b) {$HMAC(k,m=m_1\|\dots\|m_t)$};
+  \node[above=5mm of f2b, lbl] (m2b) {$h_t$};
+
+  \draw[->] (h1b) -- (f2b.west);
+  \draw[->] (m2b) -- (f2b.north);
+  \draw[->] (f2b.east) -- (h2b);
+
+  % Note
+  \node[below=2mm of f1b, lbl] (noteb) {HMAC construction};
+\end{scope}
+
+\end{tikzpicture}
     \end{center}
 
     
@@ -681,12 +1028,13 @@
 
 \begin{frame}
   \frametitle{Encrypt-then-MAC}
-
+  \vspace{-0.3cm}
   \begin{enumerate}
+  \item $E_{AES}$ some chosen plaintext attack secure encryption mode (e.g., CBC or CTR mode)
   \item Always compute the MACs on the ciphertext, never on the plaintext
   \item Use two different keys, one for encryption ($K_E$) and one for the MAC ($K_M$)
   \end{enumerate}
-  \bigskip{}
+  \medskip{}
 
   \begin{block}
   \small

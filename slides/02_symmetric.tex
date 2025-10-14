@@ -1,5 +1,29 @@
 %\documentclass[10pt,dvipsnames,svgnames]{beamer}
-\documentclass[aspectratio=169, lualatex, handout, 10pt,dvipsnames,svgnames]{beamer} %
+\documentclass[aspectratio=169, lualatex, 10pt,dvipsnames,svgnames]{beamer} % 
+
+%\usepackage[pdftex,active,tightpage]{preview}
+
+\usepackage{tikz}
+\usetikzlibrary{chains, positioning}
+
+% Define a custom TikZ style for the blocks
+\tikzset{
+  block/.style={
+    draw, 
+    rectangle, 
+    rounded corners, 
+    minimum height=1.5em, 
+    minimum width=2.5em,
+    align=center,
+    font=\sffamily,
+  },
+  arrow/.style={
+    -stealth,
+    thick,
+    font=\sffamily,
+  },
+}
+
 \makeatletter\def\input@path{{theme/}}\makeatother\usetheme{cipher}
 
 \title{Computer Security: Introduction}
@@ -152,6 +176,21 @@
 
 \end{frame}
 
+\begin{frame}{Recap}
+
+  Action items:
+  \begin{itemize}
+  \item[$\checkmark$] Request: Upload slides in advance (note that they might change before, and even after the lecture)
+  \item[$\checkmark$] Question: When will exam schedule become available? 1st of Nov, exams are 8-19th Dec.
+  \item[$\checkmark$] Question: When are the office hours? 11:15 Mon and Fri, talk with me after lecture.
+  \item[?] Request: Learn about Post-Quantum Cryptography. What are the biggest open problems in cryptography?
+  \item[?] Request: Practical examples from case studies and news.
+  \end{itemize}\medskip
+
+  We made it till Kerckhoff's principle last time.
+
+\end{frame}
+
 \begin{frame}{Goal: confidentiality}\bigskip
 \vspace{-0.5cm}
   \begin{itemize}
@@ -228,8 +267,8 @@
   \vspace{-0.5cm}
   \begin{alertblock}{}
     \begin{itemize}
-    \item[$\bullet$] A cryptographic scheme is secure under some assumptions, that is against a certain type of attacker
-    \item[$\bullet$] A cryptographic scheme may be vulnerable to certain types of attacks but not others
+    \item[$\bullet$] A cryptographic scheme is secure under some assumptions about the \textbf{power of the attacker} and they \textbf{kind of attacks} it can perform
+    %\item[$\bullet$] A cryptographic scheme may be vulnerable to certain types of attacks but not others
     \end{itemize}
   \end{alertblock}
   \medskip
@@ -237,23 +276,36 @@
   
   The attacker know the encryption/decryption algorithms but may have access to :
   \begin{itemize}
+  \item unlimited or realistic ($\le 2^{80}$) \Inblue{computational power}, or polynomial in key size \medskip
+    \pause
   \item \Inblue{Ciphertext only attack} - some ciphertexts $c_1$, \ldots, $c_n$
     \medskip
+    \pause
     
   \item \Inblue{Known plaintext attack} some plaintext/ciphertext pairs $(m_1, c_1)$, \ldots, $(m_n, c_n)$ st. $c_i = E(k, m_i))$
     \medskip
-    
+    \pause
+
   \item \Inblue{Chosen plaintext attack} - he has access to an encryption oracle - can maybe trick a user to encrypt messages $m_1$, \dots, $m_n$ of his choice
     \medskip
+    \pause
 
   \item \Inblue{Chosen ciphertext attack} - he has access to a decryption oracle - can maybe trick a user to decrypt ciphertexts $c_1$, \dots, $c_n$ of his choice
     \medskip
 
-  \item unlimited, or polynomial, or realistic ($\le 2^{80}$) \Inblue{computational power}
 
   \end{itemize}
 
 \end{frame}
+
+\begin{frame}{Chosen plaintext attack -- Battle of Midway}
+  \vspace{-0.5cm}
+    \begin{center}
+      \includegraphics[scale=0.4]{Images/midway.jpg}
+
+      Yorktown shortly after being hit by three Japanese bombs
+    \end{center}
+  \end{frame}
 
 \begin{frame}{Brute-force attack - attack on all schemes}
   \begin{itemize}
@@ -273,6 +325,529 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}{A simple scheme: the substitution cipher}
+
+  \begin{itemize}
+  \item shared secret: a permutation $\pi$ of the set of characters
+
+    \enrouge{
+      \small{$\pi=
+        \begin{array}[t]{l}
+          a\mapsto q\quad b\mapsto w\quad c\mapsto e\quad d\mapsto r\quad e\mapsto t\quad f\mapsto y\quad g\mapsto u\quad h\mapsto i\quad 
+          i\mapsto o \\ 
+          j\mapsto m\quad k\mapsto a\quad l\mapsto s\quad m\mapsto d\quad n\mapsto f\quad o\mapsto g\quad p\mapsto h\quad q\mapsto j\quad r\mapsto k \\ 
+          s\mapsto l\quad t\mapsto z\quad u\mapsto x\quad v\mapsto c\quad w\mapsto v\quad x\mapsto b\quad y\mapsto n\quad z\mapsto p\
+        \end{array}
+        $}}
+    \normalsize
+    \vspace{0.5cm}
+
+  \item Encryption: apply $\pi$ to each character of the plaintext
+    \[
+    E(\enrouge{\pi}, \enbleu{p_1\dots p_n})\ = \ \enrouge{\pi}(\enbleu{p_1})\dots\enrouge{\pi}(\enbleu{p_n})
+    \]
+    \vspace{0.15cm}
+
+  \item Decryption: apply $\pi^{-1}$ to each character of the plaintext
+    \[
+    D(\enrouge{\pi}, \envert{c_1\dots c_n})\ = \ \enrouge{\pi^{-1}}(\envert{c_1})\dots\enrouge{\pi^{-1}}(\envert{c_n})
+    \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher}
+  \pause
+\vspace{-0.5cm}
+  \begin{itemize}
+  \item Key space size: $|\mathcal{K}| = 26!\ (\approx 2^{88})$
+    \hfill\enrouge{$\Rightarrow$ brute force infeasible!}
+    \vspace{0.25cm}
+    \pause
+    
+  \item \enrouge{Frequency analysis:} exploit regularities of the language
+    \begin{itemize}
+    \item Use frequency of letters in English text
+      \begin{center}
+        \begin{tabular}[t]{c}
+          \includegraphics[scale=0.09]{Images/frequency.pdf} 
+          
+        \end{tabular}
+      \end{center}
+        
+    \item Use frequency of digrams in English text
+      \begin{center}
+        \begin{tabular}[b]{c}
+          \includegraphics[scale=0.10]{Images/digraphs.pdf}
+          
+        \end{tabular}
+      \end{center}
+    \item Use frequency of trigrams in English text
+      \begin{center}
+        \envert{the $>$ and $>$ ing}
+      \end{center}
+      
+    \item Use expected words
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Frequency of letters}
+\begin{center}
+        \begin{tabular}[t]{c}
+          \includegraphics[scale=0.25]{Images/frequency.pdf} 
+        \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Frequency of digrams}
+\begin{center}
+        \begin{tabular}[b]{c}
+          \includegraphics[scale=0.33]{Images/digraphs.pdf}
+        \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Breaking the substitution cipher: example}
+
+  \enrouge{
+    \tiny{$\pi=
+      $}}
+  \vspace{0.25cm}
+
+  
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      ZIOL EGXKLT QODL ZG OFZKGRXET NGX ZG ZIT HKOFEOHSTL QFR ZTEIFOJXTL GY \\
+      LTEXKOFU EGDHXZTKL QFR EGDHXZTK FTZVGKAL VOZI YGEXL GF OFZTKFTZ \\
+      LTEXKOZN. ZIT EGXKLT OL TYYTEZOCTSN LHSOZ OFZG ZVG HQKZL. YOKLZ \\
+      OFZKGRXEOFU ZIT ZITGKN GY EKNHZGUKQHIN OFESXROFU IGV DQFN ESQLLOEQS \\
+      QFR HGHXSQK QSUGKOZIDL VGKA T.U. RTL, KLQ, ROUOZQS LOUFQZXKTL, QFR \\
+      LTEGFR HKGCOROFU RTZQOSL GY KTQS OFZTKFTZ LTEXKOZN HKGZGEGSL, \\
+      QSUGKOZIDL, QFR ZIKTQZL, T.U. OHLTE, COKXLTL, YOKTVQSSL. ITFET, NGX \\
+      VOSS STQKF WGZI ZITGKTZOEQS QLHTEZL GY EGDHXZTK QFR FTZVGKA \\
+      LTEXKOZN QL VTSS QL IGV ZIQZ ZITGKN OL QHHSOTR OF ZIT OFZTKFTZ. ZIOL \\
+      AFGVSTRUT VOSS ITSH NGX OF RTLOUFOFU QFR RTCTSGHOFU LTEXKT \\
+      QHHSOEQZOGFL QFR FTZVGKA HKGZGEGSL QL VTSS QL WXOSROFU LTEXKT \\
+      FTZVGKAL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+
+  \enrouge{
+    \tiny{$\pi=
+      $}}
+  \vspace{0.25cm}
+
+  
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      ZIOL EGXKLT QODL ZG OFZKGRXET NGX ZG ZIT HKOFEOHSTL QFR ZTEIFOJXTL GY \\
+      LTEXKOFU EGDHXZTKL QFR EGDHXZTK FTZVGKAL VOZI YGEXL GF OFZTKFTZ \\
+      LTEXKOZN. ZIT EGXKLT OL TYYTEZOCTSN LHSOZ OFZG ZVG HQKZL. YOKLZ \\
+      OFZKGRXEOFU ZIT ZITGKN GY EKNHZGUKQHIN OFESXROFU IGV DQFN ESQLLOEQS \\
+      QFR HGHXSQK QSUGKOZIDL VGKA T.U. RTL, KLQ, ROUOZQS LOUFQZXKTL, QFR \\
+      LTEGFR HKGCOROFU RTZQOSL GY KTQS OFZTKFTZ LTEXKOZN HKGZGEGSL, \\
+      QSUGKOZIDL, QFR ZIKTQZL, T.U. OHLTE, COKXLTL, YOKTVQSSL. ITFET, NGX \\
+      VOSS STQKF WGZI ZITGKTZOEQS QLHTEZL GY EGDHXZTK QFR FTZVGKA \\
+      LTEXKOZN QL VTSS QL IGV ZIQZ ZITGKN OL QHHSOTR OF ZIT OFZTKFTZ. ZIOL \\
+      AFGVSTRUT VOSS ITSH NGX OF RTLOUFOFU QFR RTCTSGHOFU LTEXKT \\
+      QHHSOEQZOGFL QFR FTZVGKA HKGZGEGSL QL VTSS QL WXOSROFU LTEXKT \\
+      FTZVGKAL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}{Most common letters in c: t $>$ z $>$ o $>$ l}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+       e\mapsto t\quad t\mapsto z\
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+  
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}IOL EGXKL\enbleu{E} QODL \enbleu{T}G OF\enbleu{T}KGRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}I\enbleu{E} HKOFEOHS\enbleu{E}L QFR \enbleu{T}\enbleu{E}EIFOJX\enbleu{E}L GY \\
+      L\enbleu{E}EXKOFU EGDHX\enbleu{T}\enbleu{E}KL QFR EGDHX\enbleu{T}\enbleu{E}K F\enbleu{E}\enbleu{T}VGKAL VO\enbleu{T}I YGEXL GF OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T} \\
+      L\enbleu{E}EXKO\enbleu{T}N. \enbleu{T}I\enbleu{E} EGXKL\enbleu{E} OL \enbleu{E}YY\enbleu{E}E\enbleu{T}OC\enbleu{E}SN LHSO\enbleu{T} OF\enbleu{T}G \enbleu{T}VG HQK\enbleu{T}L. YOKL\enbleu{T} \\
+      OF\enbleu{T}KGRXEOFU \enbleu{T}I\enbleu{E} \enbleu{T}I\enbleu{E}GKN GY EKNH\enbleu{T}GUKQHIN OFESXROFU IGV DQFN ESQLLOEQS \\
+      QFR HGHXSQK QSUGKO\enbleu{T}IDL VGKA \enbleu{E}.U. R\enbleu{E}L, KLQ, ROUO\enbleu{T}QS LOUFQ\enbleu{T}XK\enbleu{E}L, QFR \\
+      L\enbleu{E}EGFR HKGCOROFU R\enbleu{E}\enbleu{T}QOSL GY K\enbleu{E}QS OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T} L\enbleu{E}EXKO\enbleu{T}N HKG\enbleu{T}GEGSL, \\
+      QSUGKO\enbleu{T}IDL, QFR \enbleu{T}IK\enbleu{E}Q\enbleu{T}L, \enbleu{E}.U. OHL\enbleu{E}E, COKXL\enbleu{E}L, YOK\enbleu{E}VQSSL. I\enbleu{E}FE\enbleu{E}, NGX \\
+      VOSS S\enbleu{E}QKF WG\enbleu{T}I \enbleu{T}I\enbleu{E}GK\enbleu{E}\enbleu{T}OEQS QLH\enbleu{E}E\enbleu{T}L GY EGDHX\enbleu{T}\enbleu{E}K QFR F\enbleu{E}\enbleu{T}VGKA \\
+      L\enbleu{E}EXKO\enbleu{T}N QL V\enbleu{E}SS QL IGV \enbleu{T}IQ\enbleu{T} \enbleu{T}I\enbleu{E}GKN OL QHHSO\enbleu{E}R OF \enbleu{T}I\enbleu{E} OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T}. \enbleu{T}IOL \\
+      AFGVS\enbleu{E}RU\enbleu{E} VOSS I\enbleu{E}SH NGX OF R\enbleu{E}LOUFOFU QFR R\enbleu{E}C\enbleu{E}SGHOFU L\enbleu{E}EXK\enbleu{E} \\
+      QHHSOEQ\enbleu{T}OGFL QFR F\enbleu{E}\enbleu{T}VGKA HKG\enbleu{T}GEGSL QL V\enbleu{E}SS QL WXOSROFU L\enbleu{E}EXK\enbleu{E} \\
+      F\enbleu{E}\enbleu{T}VGKAL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}Most common letters in c: t $>$ z $>$ \dots
+  
+  \color{black}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+       e\mapsto t\quad t\mapsto z
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+  
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}IOL EGXKL\enbleu{E} QODL \enbleu{T}G OF\enbleu{T}KGRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}I\enbleu{E} HKOFEOHS\enbleu{E}L QFR \enbleu{T}\enbleu{E}EIFOJX\enbleu{E}L GY \\
+      L\enbleu{E}EXKOFU EGDHX\enbleu{T}\enbleu{E}KL QFR EGDHX\enbleu{T}\enbleu{E}K F\enbleu{E}\enbleu{T}VGKAL VO\enbleu{T}I YGEXL GF OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T} \\
+      L\enbleu{E}EXKO\enbleu{T}N. \enbleu{T}I\enbleu{E} EGXKL\enbleu{E} OL \enbleu{E}YY\enbleu{E}E\enbleu{T}OC\enbleu{E}SN LHSO\enbleu{T} OF\enbleu{T}G \enbleu{T}VG HQK\enbleu{T}L. YOKL\enbleu{T} \\
+      OF\enbleu{T}KGRXEOFU \enbleu{T}I\enbleu{E} \enbleu{T}I\enbleu{E}GKN GY EKNH\enbleu{T}GUKQHIN OFESXROFU IGV DQFN ESQLLOEQS \\
+      QFR HGHXSQK QSUGKO\enbleu{T}IDL VGKA \enbleu{E}.U. R\enbleu{E}L, KLQ, ROUO\enbleu{T}QS LOUFQ\enbleu{T}XK\enbleu{E}L, QFR \\
+      L\enbleu{E}EGFR HKGCOROFU R\enbleu{E}\enbleu{T}QOSL GY K\enbleu{E}QS OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T} L\enbleu{E}EXKO\enbleu{T}N HKG\enbleu{T}GEGSL, \\
+      QSUGKO\enbleu{T}IDL, QFR \enbleu{T}IK\enbleu{E}Q\enbleu{T}L, \enbleu{E}.U. OHL\enbleu{E}E, COKXL\enbleu{E}L, YOK\enbleu{E}VQSSL. I\enbleu{E}FE\enbleu{E}, NGX \\
+      VOSS S\enbleu{E}QKF WG\enbleu{T}I \enbleu{T}I\enbleu{E}GK\enbleu{E}\enbleu{T}OEQS QLH\enbleu{E}E\enbleu{T}L GY EGDHX\enbleu{T}\enbleu{E}K QFR F\enbleu{E}\enbleu{T}VGKA \\
+      L\enbleu{E}EXKO\enbleu{T}N QL V\enbleu{E}SS QL IGV \enbleu{T}IQ\enbleu{T} \enbleu{T}I\enbleu{E}GKN OL QHHSO\enbleu{E}R OF \enbleu{T}I\enbleu{E} OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T}. \enbleu{T}IOL \\
+      AFGVS\enbleu{E}RU\enbleu{E} VOSS I\enbleu{E}SH NGX OF R\enbleu{E}LOUFOFU QFR R\enbleu{E}C\enbleu{E}SGHOFU L\enbleu{E}EXK\enbleu{E} \\
+      QHHSOEQ\enbleu{T}OGFL QFR F\enbleu{E}\enbleu{T}VGKA HKG\enbleu{T}GEGSL QL V\enbleu{E}SS QL WXOSROFU L\enbleu{E}EXK\enbleu{E} \\
+      F\enbleu{E}\enbleu{T}VGKAL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}Most common digrams in c: of $>$ zi $>$ \dots
+  
+  \pause
+
+  t$\mapsto$z suggests h$\mapsto$i
+
+  \color{black}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+
+  
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+       e\mapsto t\quad t\mapsto z\quad h\mapsto i\ 
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}\enbleu{H}OL EGXKL\enbleu{E} QODL \enbleu{T}G OF\enbleu{T}KGRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}\enbleu{H}\enbleu{E} HKOFEOHS\enbleu{E}L QFR \enbleu{T}\enbleu{E}E\enbleu{H}FOJX\enbleu{E}L GY \\
+      L\enbleu{E}EXKOFU EGDHX\enbleu{T}\enbleu{E}KL QFR EGDHX\enbleu{T}\enbleu{E}K F\enbleu{E}\enbleu{T}VGKAL VO\enbleu{T}\enbleu{H} YGEXL GF OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T} \\
+      L\enbleu{E}EXKO\enbleu{T}N. \enbleu{T}\enbleu{H}\enbleu{E} EGXKL\enbleu{E} OL \enbleu{E}YY\enbleu{E}E\enbleu{T}OC\enbleu{E}SN LHSO\enbleu{T} OF\enbleu{T}G \enbleu{T}VG HQK\enbleu{T}L. YOKL\enbleu{T} \\
+      OF\enbleu{T}KGRXEOFU \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{T}\enbleu{H}\enbleu{E}GKN GY EKNH\enbleu{T}GUKQH\enbleu{H}N OFESXROFU \enbleu{H}GV DQFN ESQLLOEQS \\
+      QFR HGHXSQK QSUGKO\enbleu{T}\enbleu{H}DL VGKA \enbleu{E}.U. R\enbleu{E}L, KLQ, ROUO\enbleu{T}QS LOUFQ\enbleu{T}XK\enbleu{E}L, QFR \\
+      L\enbleu{E}EGFR HKGCOROFU R\enbleu{E}\enbleu{T}QOSL GY K\enbleu{E}QS OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T} L\enbleu{E}EXKO\enbleu{T}N HKG\enbleu{T}GEGSL, \\
+      QSUGKO\enbleu{T}\enbleu{H}DL, QFR \enbleu{T}\enbleu{H}K\enbleu{E}Q\enbleu{T}L, \enbleu{E}.U. OHL\enbleu{E}E, COKXL\enbleu{E}L, YOK\enbleu{E}VQSSL. \enbleu{H}\enbleu{E}FE\enbleu{E}, NGX \\
+      VOSS S\enbleu{E}QKF WG\enbleu{T}\enbleu{H} \enbleu{T}\enbleu{H}\enbleu{E}GK\enbleu{E}\enbleu{T}OEQS QLH\enbleu{E}E\enbleu{T}L GY EGDHX\enbleu{T}\enbleu{E}K QFR F\enbleu{E}\enbleu{T}VGKA \\
+      L\enbleu{E}EXKO\enbleu{T}N QL V\enbleu{E}SS QL \enbleu{H}GV \enbleu{T}\enbleu{H}Q\enbleu{T} \enbleu{T}\enbleu{H}\enbleu{E}GKN OL QHHSO\enbleu{E}R OF \enbleu{T}\enbleu{H}\enbleu{E} OF\enbleu{T}\enbleu{E}KF\enbleu{E}\enbleu{T}. \enbleu{T}\enbleu{H}OL \\
+      AFGVS\enbleu{E}RU\enbleu{E} VOSS \enbleu{H}\enbleu{E}SH NGX OF R\enbleu{E}LOUFOFU QFR R\enbleu{E}C\enbleu{E}SGHOFU L\enbleu{E}EXK\enbleu{E} \\
+      QHHSOEQ\enbleu{T}OGFL QFR F\enbleu{E}\enbleu{T}VGKA HKG\enbleu{T}GEGSL QL V\enbleu{E}SS QL WXOSROFU L\enbleu{E}EXK\enbleu{E} \\
+      F\enbleu{E}\enbleu{T}VGKAL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \color{black}\normalsize{Most common digrams in c: of $>$ zi $>$ \dots}
+  \pause
+
+  we guess in$\mapsto$of
+  
+  \color{black}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+  
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+      e\mapsto t\quad t\mapsto z \quad h\mapsto i\quad i\mapsto o\quad n\mapsto f
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}\enbleu{H}\enbleu{I}L EGXKL\enbleu{E} Q\enbleu{I}DL \enbleu{T}G \enbleu{I}\enbleu{N}\enbleu{T}KGRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}\enbleu{H}\enbleu{E} HK\enbleu{I}\enbleu{N}E\enbleu{I}HS\enbleu{E}L Q\enbleu{N}R \enbleu{T}\enbleu{E}E\enbleu{H}\enbleu{N}\enbleu{I}JX\enbleu{E}L GY \\
+      L\enbleu{E}EXK\enbleu{I}\enbleu{N}U EGDHX\enbleu{T}\enbleu{E}KL Q\enbleu{N}R EGDHX\enbleu{T}\enbleu{E}K \enbleu{N}\enbleu{E}\enbleu{T}VGKAL V\enbleu{I}\enbleu{T}\enbleu{H} YGEXL G\enbleu{N} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}K\enbleu{N}\enbleu{E}\enbleu{T} \\
+      L\enbleu{E}EXK\enbleu{I}\enbleu{T}N. \enbleu{T}\enbleu{H}\enbleu{E} EGXKL\enbleu{E} \enbleu{I}L \enbleu{E}YY\enbleu{E}E\enbleu{T}\enbleu{I}C\enbleu{E}SN LHS\enbleu{I}\enbleu{T} \enbleu{I}\enbleu{N}\enbleu{T}G \enbleu{T}VG HQK\enbleu{T}L. Y\enbleu{I}KL\enbleu{T} \\
+      \enbleu{I}\enbleu{N}\enbleu{T}KGRXE\enbleu{I}\enbleu{N}U \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{T}\enbleu{H}\enbleu{E}GKN GY EKNH\enbleu{T}GUKQH\enbleu{H}N \enbleu{I}\enbleu{N}ESXR\enbleu{I}\enbleu{N}U \enbleu{H}GV DQ\enbleu{N}N ESQLL\enbleu{I}EQS \\
+      Q\enbleu{N}R HGHXSQK QSUGK\enbleu{I}\enbleu{T}\enbleu{H}DL VGKA \enbleu{E}.U. R\enbleu{E}L, KLQ, R\enbleu{I}U\enbleu{I}\enbleu{T}QS L\enbleu{I}U\enbleu{N}Q\enbleu{T}XK\enbleu{E}L, Q\enbleu{N}R \\
+      L\enbleu{E}EG\enbleu{N}R HKGC\enbleu{I}R\enbleu{I}\enbleu{N}U R\enbleu{E}\enbleu{T}Q\enbleu{I}SL GY K\enbleu{E}QS \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}K\enbleu{N}\enbleu{E}\enbleu{T} L\enbleu{E}EXK\enbleu{I}\enbleu{T}N HKG\enbleu{T}GEGSL, \\
+      QSUGK\enbleu{I}\enbleu{T}\enbleu{H}DL, Q\enbleu{N}R \enbleu{T}\enbleu{H}K\enbleu{E}Q\enbleu{T}L, \enbleu{E}.U. \enbleu{I}HL\enbleu{E}E, C\enbleu{I}KXL\enbleu{E}L, Y\enbleu{I}K\enbleu{E}VQSSL. \enbleu{H}\enbleu{E}\enbleu{N}E\enbleu{E}, NGX \\
+      V\enbleu{I}SS S\enbleu{E}QK\enbleu{N} WG\enbleu{T}\enbleu{H} \enbleu{T}\enbleu{H}\enbleu{E}GK\enbleu{E}\enbleu{T}\enbleu{I}EQS QLH\enbleu{E}E\enbleu{T}L GY EGDHX\enbleu{T}\enbleu{E}K Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VGKA \\
+      L\enbleu{E}EXK\enbleu{I}\enbleu{T}N QL V\enbleu{E}SS QL \enbleu{H}GV \enbleu{T}\enbleu{H}Q\enbleu{T} \enbleu{T}\enbleu{H}\enbleu{E}GKN \enbleu{I}L QHHS\enbleu{I}\enbleu{E}R \enbleu{I}\enbleu{N} \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}K\enbleu{N}\enbleu{E}\enbleu{T}. \enbleu{T}\enbleu{H}\enbleu{I}L \\
+      A\enbleu{N}GVS\enbleu{E}RU\enbleu{E} V\enbleu{I}SS \enbleu{H}\enbleu{E}SH NGX \enbleu{I}\enbleu{N} R\enbleu{E}L\enbleu{I}U\enbleu{N}\enbleu{I}\enbleu{N}U Q\enbleu{N}R R\enbleu{E}C\enbleu{E}SGH\enbleu{I}\enbleu{N}U L\enbleu{E}EXK\enbleu{E} \\
+      QHHS\enbleu{I}EQ\enbleu{T}\enbleu{I}G\enbleu{N}L Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VGKA HKG\enbleu{T}GEGSL QL V\enbleu{E}SS QL WX\enbleu{I}SR\enbleu{I}\enbleu{N}U L\enbleu{E}EXK\enbleu{E} \\
+      \enbleu{N}\enbleu{E}\enbleu{T}VGKAL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}{Most common digrams in c: of $>$ zi $>$ \dots}
+  
+  \color{black}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+  
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+           e\mapsto t\quad t\mapsto z \quad h\mapsto i\quad i\mapsto o\quad n\mapsto f
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}\enbleu{H}\enbleu{I}L EGXKL\enbleu{E} Q\enbleu{I}DL \enbleu{T}G \enbleu{I}\enbleu{N}\enbleu{T}KGRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}\enbleu{H}\enbleu{E} HK\enbleu{I}\enbleu{N}E\enbleu{I}HS\enbleu{E}L Q\enbleu{N}R \enbleu{T}\enbleu{E}E\enbleu{H}\enbleu{N}\enbleu{I}JX\enbleu{E}L GY \\
+      L\enbleu{E}EXK\enbleu{I}\enbleu{N}U EGDHX\enbleu{T}\enbleu{E}KL Q\enbleu{N}R EGDHX\enbleu{T}\enbleu{E}K \enbleu{N}\enbleu{E}\enbleu{T}VGKAL V\enbleu{I}\enbleu{T}\enbleu{H} YGEXL G\enbleu{N} \underline{\bf \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}K\enbleu{N}\enbleu{E}\enbleu{T}} \\
+      L\enbleu{E}EXK\enbleu{I}\enbleu{T}N. \enbleu{T}\enbleu{H}\enbleu{E} EGXKL\enbleu{E} \enbleu{I}L \enbleu{E}YY\enbleu{E}E\enbleu{T}\enbleu{I}C\enbleu{E}SN LHS\enbleu{I}\enbleu{T} \enbleu{I}\enbleu{N}\enbleu{T}G \enbleu{T}VG HQK\enbleu{T}L. Y\enbleu{I}KL\enbleu{T} \\
+      \enbleu{I}\enbleu{N}\enbleu{T}KGRXE\enbleu{I}\enbleu{N}U \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{T}\enbleu{H}\enbleu{E}GKN GY EKNH\enbleu{T}GUKQH\enbleu{H}N \enbleu{I}\enbleu{N}ESXR\enbleu{I}\enbleu{N}U \enbleu{H}GV DQ\enbleu{N}N ESQLL\enbleu{I}EQS \\
+      Q\enbleu{N}R HGHXSQK QSUGK\enbleu{I}\enbleu{T}\enbleu{H}DL VGKA \enbleu{E}.U. R\enbleu{E}L, KLQ, R\enbleu{I}U\enbleu{I}\enbleu{T}QS L\enbleu{I}U\enbleu{N}Q\enbleu{T}XK\enbleu{E}L, Q\enbleu{N}R \\
+      L\enbleu{E}EG\enbleu{N}R HKGC\enbleu{I}R\enbleu{I}\enbleu{N}U R\enbleu{E}\enbleu{T}Q\enbleu{I}SL GY K\enbleu{E}QS \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}K\enbleu{N}\enbleu{E}\enbleu{T} L\enbleu{E}EXK\enbleu{I}\enbleu{T}N HKG\enbleu{T}GEGSL, \\
+      QSUGK\enbleu{I}\enbleu{T}\enbleu{H}DL, Q\enbleu{N}R \enbleu{T}\enbleu{H}K\enbleu{E}Q\enbleu{T}L, \enbleu{E}.U. \enbleu{I}HL\enbleu{E}E, C\enbleu{I}KXL\enbleu{E}L, Y\enbleu{I}K\enbleu{E}VQSSL. \enbleu{H}\enbleu{E}\enbleu{N}E\enbleu{E}, NGX \\
+      V\enbleu{I}SS S\enbleu{E}QK\enbleu{N} WG\enbleu{T}\enbleu{H} \enbleu{T}\enbleu{H}\enbleu{E}GK\enbleu{E}\enbleu{T}\enbleu{I}EQS QLH\enbleu{E}E\enbleu{T}L GY EGDHX\enbleu{T}\enbleu{E}K Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VGKA \\
+      L\enbleu{E}EXK\enbleu{I}\enbleu{T}N QL V\enbleu{E}SS QL \enbleu{H}GV \enbleu{T}\enbleu{H}Q\enbleu{T} \enbleu{T}\enbleu{H}\enbleu{E}GKN \enbleu{I}L QHHS\enbleu{I}\enbleu{E}R \enbleu{I}\enbleu{N} \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}K\enbleu{N}\enbleu{E}\enbleu{T}. \enbleu{T}\enbleu{H}\enbleu{I}L \\
+      A\enbleu{N}GVS\enbleu{E}RU\enbleu{E} V\enbleu{I}SS \enbleu{H}\enbleu{E}SH NGX \enbleu{I}\enbleu{N} R\enbleu{E}L\enbleu{I}U\enbleu{N}\enbleu{I}\enbleu{N}U Q\enbleu{N}R R\enbleu{E}C\enbleu{E}SGH\enbleu{I}\enbleu{N}U L\enbleu{E}EXK\enbleu{E} \\
+      QHHS\enbleu{I}EQ\enbleu{T}\enbleu{I}G\enbleu{N}L Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VGKA HKG\enbleu{T}GEGSL QL V\enbleu{E}SS QL WX\enbleu{I}SR\enbleu{I}\enbleu{N}U L\enbleu{E}EXK\enbleu{E} \\
+      \enbleu{N}\enbleu{E}\enbleu{T}VGKAL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}{We identify in c the word {\bf INTEKNET}}
+  \pause
+  
+  suggests r$\mapsto$k
+  \color{black}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+  
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+            e\mapsto t\quad t\mapsto z \quad h\mapsto i\quad i\mapsto o\quad n\mapsto f\quad r\mapsto k
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}\enbleu{H}\enbleu{I}L EGX\enbleu{R}L\enbleu{E} Q\enbleu{I}DL \enbleu{T}G \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{R}GRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}\enbleu{H}\enbleu{E} H\enbleu{R}\enbleu{I}\enbleu{N}E\enbleu{I}HS\enbleu{E}L Q\enbleu{N}R \enbleu{T}\enbleu{E}E\enbleu{H}\enbleu{N}\enbleu{I}JX\enbleu{E}L GY \\
+      L\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{N}U EGDHX\enbleu{T}\enbleu{E}\enbleu{R}L Q\enbleu{N}R EGDHX\enbleu{T}\enbleu{E}\enbleu{R} \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}AL V\enbleu{I}\enbleu{T}\enbleu{H} YGEXL G\enbleu{N} \underline{\bf \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T}} \\
+      L\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N. \enbleu{T}\enbleu{H}\enbleu{E} EGX\enbleu{R}L\enbleu{E} \enbleu{I}L \enbleu{E}YY\enbleu{E}E\enbleu{T}\enbleu{I}C\enbleu{E}SN LHS\enbleu{I}\enbleu{T} \enbleu{I}\enbleu{N}\enbleu{T}G \enbleu{T}VG HQ\enbleu{R}\enbleu{T}L. Y\enbleu{I}\enbleu{R}L\enbleu{T} \\
+      \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{R}GRXE\enbleu{I}\enbleu{N}U \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}N GY E\enbleu{R}NH\enbleu{T}GU\enbleu{R}QH\enbleu{H}N \enbleu{I}\enbleu{N}ESXR\enbleu{I}\enbleu{N}U \enbleu{H}GV DQ\enbleu{N}N ESQLL\enbleu{I}EQS \\
+      Q\enbleu{N}R HGHXSQ\enbleu{R} QSUG\enbleu{R}\enbleu{I}\enbleu{T}\enbleu{H}DL VG\enbleu{R}A \enbleu{E}.U. R\enbleu{E}L, \enbleu{R}LQ, R\enbleu{I}U\enbleu{I}\enbleu{T}QS L\enbleu{I}U\enbleu{N}Q\enbleu{T}X\enbleu{R}\enbleu{E}L, Q\enbleu{N}R \\
+      L\enbleu{E}EG\enbleu{N}R H\enbleu{R}GC\enbleu{I}R\enbleu{I}\enbleu{N}U R\enbleu{E}\enbleu{T}Q\enbleu{I}SL GY \enbleu{R}\enbleu{E}QS \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T} L\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N H\enbleu{R}G\enbleu{T}GEGSL, \\
+      QSUG\enbleu{R}\enbleu{I}\enbleu{T}\enbleu{H}DL, Q\enbleu{N}R \enbleu{T}\enbleu{H}\enbleu{R}\enbleu{E}Q\enbleu{T}L, \enbleu{E}.U. \enbleu{I}HL\enbleu{E}E, C\enbleu{I}\enbleu{R}XL\enbleu{E}L, Y\enbleu{I}\enbleu{R}\enbleu{E}VQSSL. \enbleu{H}\enbleu{E}\enbleu{N}E\enbleu{E}, NGX \\
+      V\enbleu{I}SS S\enbleu{E}Q\enbleu{R}\enbleu{N} WG\enbleu{T}\enbleu{H} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}\enbleu{E}\enbleu{T}\enbleu{I}EQS QLH\enbleu{E}E\enbleu{T}L GY EGDHX\enbleu{T}\enbleu{E}\enbleu{R} Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A \\
+      L\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N QL V\enbleu{E}SS QL \enbleu{H}GV \enbleu{T}\enbleu{H}Q\enbleu{T} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}N \enbleu{I}L QHHS\enbleu{I}\enbleu{E}R \enbleu{I}\enbleu{N} \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T}. \enbleu{T}\enbleu{H}\enbleu{I}L \\
+      A\enbleu{N}GVS\enbleu{E}RU\enbleu{E} V\enbleu{I}SS \enbleu{H}\enbleu{E}SH NGX \enbleu{I}\enbleu{N} R\enbleu{E}L\enbleu{I}U\enbleu{N}\enbleu{I}\enbleu{N}U Q\enbleu{N}R R\enbleu{E}C\enbleu{E}SGH\enbleu{I}\enbleu{N}U L\enbleu{E}EXY\enbleu{E} \\
+      QHHS\enbleu{I}EQ\enbleu{T}\enbleu{I}G\enbleu{N}L Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A H\enbleu{R}G\enbleu{T}GEGSL QL V\enbleu{E}SS QL WX\enbleu{I}SR\enbleu{I}\enbleu{N}U L\enbleu{E}EX\enbleu{R}\enbleu{E} \\
+      \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}AL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}{We identify in c the word {\bf INTEKNET}}
+  
+  \color{black}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+  
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+       e\mapsto t\quad t\mapsto z \quad h\mapsto i\quad i\mapsto o\quad n\mapsto f\quad r\mapsto k
+       \end{array}
+      $}}
+  \vspace{0.25cm}
+
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}\enbleu{H}\enbleu{I}L EGX\enbleu{R}L\enbleu{E} Q\enbleu{I}DL \enbleu{T}G \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{R}GRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}\enbleu{H}\enbleu{E} H\enbleu{R}\enbleu{I}\enbleu{N}E\enbleu{I}HS\enbleu{E}L Q\enbleu{N}R \enbleu{T}\enbleu{E}E\enbleu{H}\enbleu{N}\enbleu{I}JX\enbleu{E}L GY \\
+      L\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{N}U EGDHX\enbleu{T}\enbleu{E}\enbleu{R}L Q\enbleu{N}R EGDHX\enbleu{T}\enbleu{E}\enbleu{R} \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}AL V\enbleu{I}\enbleu{T}\enbleu{H} YGEXL G\enbleu{N} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T} \\
+      L\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N. \enbleu{T}\enbleu{H}\enbleu{E} EGX\enbleu{R}L\enbleu{E} \enbleu{I}L \enbleu{E}YY\enbleu{E}E\enbleu{T}\enbleu{I}C\enbleu{E}SN LHS\enbleu{I}\enbleu{T} \enbleu{I}\enbleu{N}\enbleu{T}G \enbleu{T}VG HQ\enbleu{R}\enbleu{T}L. Y\enbleu{I}\enbleu{R}L\enbleu{T} \\
+      \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{R}GRXE\enbleu{I}\enbleu{N}U \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}N GY E\enbleu{R}NH\enbleu{T}GU\enbleu{R}QH\enbleu{H}N \enbleu{I}\enbleu{N}ESXR\enbleu{I}\enbleu{N}U \enbleu{H}GV DQ\enbleu{N}N ESQLL\enbleu{I}EQS \\
+      Q\enbleu{N}R HGHXSQ\enbleu{R} QSUG\enbleu{R}\enbleu{I}\enbleu{T}\enbleu{H}DL VG\enbleu{R}A \enbleu{E}.U. R\enbleu{E}L, \enbleu{R}LQ, R\enbleu{I}U\enbleu{I}\enbleu{T}QS L\enbleu{I}U\enbleu{N}Q\enbleu{T}X\enbleu{R}\enbleu{E}L, Q\enbleu{N}R \\
+      L\enbleu{E}EG\enbleu{N}R H\enbleu{R}GC\enbleu{I}R\enbleu{I}\enbleu{N}U R\enbleu{E}\enbleu{T}Q\enbleu{I}SL GY \enbleu{R}\enbleu{E}QS \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T} L\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N H\enbleu{R}G\enbleu{T}GEGSL, \\
+      QSUG\enbleu{R}\enbleu{I}\enbleu{T}\enbleu{H}DL, Q\enbleu{N}R \enbleu{T}\enbleu{H}\enbleu{R}\enbleu{E}Q\enbleu{T}L, \enbleu{E}.U. \enbleu{I}HL\enbleu{E}E, C\enbleu{I}\enbleu{R}XL\enbleu{E}L, Y\enbleu{I}\enbleu{R}\enbleu{E}VQSSL. \enbleu{H}\enbleu{E}\enbleu{N}E\enbleu{E}, NGX \\
+      V\enbleu{I}SS S\enbleu{E}Q\enbleu{R}\enbleu{N} WG\enbleu{T}\enbleu{H} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}\enbleu{E}\enbleu{T}\enbleu{I}EQS QLH\enbleu{E}E\enbleu{T}L GY EGDHX\enbleu{T}\enbleu{E}\enbleu{R} Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A \\
+      L\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N QL V\enbleu{E}SS QL \enbleu{H}GV \enbleu{T}\enbleu{H}Q\enbleu{T} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}N \enbleu{I}L QHHS\enbleu{I}\enbleu{E}R \enbleu{I}\enbleu{N} \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T}. \enbleu{T}\enbleu{H}\enbleu{I}L \\
+      A\enbleu{N}GVS\enbleu{E}RU\enbleu{E} V\enbleu{I}SS \enbleu{H}\enbleu{E}SH NGX \enbleu{I}\enbleu{N} R\enbleu{E}L\enbleu{I}U\enbleu{N}\enbleu{I}\enbleu{N}U Q\enbleu{N}R R\enbleu{E}C\enbleu{E}SGH\enbleu{I}\enbleu{N}U L\enbleu{E}EXY\enbleu{E} \\
+      QHHS\enbleu{I}EQ\enbleu{T}\enbleu{I}G\enbleu{N}L Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A H\enbleu{R}G\enbleu{T}GEGSL QL V\enbleu{E}SS QL WX\enbleu{I}SR\enbleu{I}\enbleu{N}U L\enbleu{E}EX\enbleu{R}\enbleu{E} \\
+      \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}AL.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}{The first word is THIL}
+  \pause
+  
+  {suggests s$\mapsto$l}
+  \color{black}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+  
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+      e\mapsto t\quad t\mapsto z \quad h\mapsto i\quad i\mapsto o\quad n\mapsto f\quad r\mapsto k\quad s\mapsto l\ 
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}\enbleu{H}\enbleu{I}\enbleu{S} EGX\enbleu{R}\enbleu{S}\enbleu{E} Q\enbleu{I}D\enbleu{S} \enbleu{T}G \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{R}GRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}\enbleu{H}\enbleu{E} H\enbleu{R}\enbleu{I}\enbleu{N}E\enbleu{I}HS\enbleu{E}\enbleu{S} Q\enbleu{N}R \enbleu{T}\enbleu{E}E\enbleu{H}\enbleu{N}\enbleu{I}JX\enbleu{E}\enbleu{S} GY \\
+      \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{N}U EGDHX\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{S} Q\enbleu{N}R EGDHX\enbleu{T}\enbleu{E}\enbleu{R} \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A\enbleu{S} V\enbleu{I}\enbleu{T}\enbleu{H} YGEX\enbleu{S} G\enbleu{N} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T} \\
+      \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N. \enbleu{T}\enbleu{H}\enbleu{E} EGX\enbleu{R}\enbleu{S}\enbleu{E} \enbleu{I}\enbleu{S} \enbleu{E}YY\enbleu{E}E\enbleu{T}\enbleu{I}C\enbleu{E}SN \enbleu{S}HS\enbleu{I}\enbleu{T} \enbleu{I}\enbleu{N}\enbleu{T}G \enbleu{T}VG HQ\enbleu{R}\enbleu{T}\enbleu{S}. Y\enbleu{I}\enbleu{R}\enbleu{S}\enbleu{T} \\
+      \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{R}GRXE\enbleu{I}\enbleu{N}U \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}N GY E\enbleu{R}NH\enbleu{T}GU\enbleu{R}QH\enbleu{H}N \enbleu{I}\enbleu{N}ESXR\enbleu{I}\enbleu{N}U \enbleu{H}GV DQ\enbleu{N}N ESQ\enbleu{S}\enbleu{S}\enbleu{I}EQS \\
+      Q\enbleu{N}R HGHXSQ\enbleu{R} QSUG\enbleu{R}\enbleu{I}\enbleu{T}\enbleu{H}D\enbleu{S} VG\enbleu{R}A \enbleu{E}.U. R\enbleu{E}\enbleu{S}, \enbleu{R}\enbleu{S}Q, R\enbleu{I}U\enbleu{I}\enbleu{T}QS \enbleu{S}\enbleu{I}U\enbleu{N}Q\enbleu{T}X\enbleu{R}\enbleu{E}\enbleu{S}, Q\enbleu{N}R \\
+      \enbleu{S}\enbleu{E}EG\enbleu{N}R H\enbleu{R}GC\enbleu{I}R\enbleu{I}\enbleu{N}U R\enbleu{E}\enbleu{T}Q\enbleu{I}S\enbleu{S} GY \enbleu{R}\enbleu{E}QS \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T} \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N H\enbleu{R}G\enbleu{T}GEGS\enbleu{S}, \\
+      QSUG\enbleu{R}\enbleu{I}\enbleu{T}\enbleu{H}D\enbleu{S}, Q\enbleu{N}R \enbleu{T}\enbleu{H}\enbleu{R}\enbleu{E}Q\enbleu{T}\enbleu{S}, \enbleu{E}.U. \enbleu{I}H\enbleu{S}\enbleu{E}E, C\enbleu{I}\enbleu{R}X\enbleu{S}\enbleu{E}\enbleu{S}, Y\enbleu{I}\enbleu{R}\enbleu{E}VQSS\enbleu{S}. \enbleu{H}\enbleu{E}\enbleu{N}E\enbleu{E}, NGX \\
+      V\enbleu{I}SS S\enbleu{E}Q\enbleu{R}\enbleu{N} WG\enbleu{T}\enbleu{H} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}\enbleu{E}\enbleu{T}\enbleu{I}EQS Q\enbleu{S}H\enbleu{E}E\enbleu{T}\enbleu{S} GY EGDHX\enbleu{T}\enbleu{E}\enbleu{R} Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A \\
+      \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N Q\enbleu{S} V\enbleu{E}SS Q\enbleu{S} \enbleu{H}GV \enbleu{T}\enbleu{H}Q\enbleu{T} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}N \enbleu{I}\enbleu{S} QHHS\enbleu{I}\enbleu{E}R \enbleu{I}\enbleu{N} \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T}. \enbleu{T}\enbleu{H}\enbleu{I}\enbleu{S} \\
+      A\enbleu{N}GVS\enbleu{E}RU\enbleu{E} V\enbleu{I}SS \enbleu{H}\enbleu{E}SH NGX \enbleu{I}\enbleu{N} R\enbleu{E}\enbleu{S}\enbleu{I}U\enbleu{N}\enbleu{I}\enbleu{N}U Q\enbleu{N}R R\enbleu{E}C\enbleu{E}SGH\enbleu{I}\enbleu{N}U \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{E} \\
+      QHHS\enbleu{I}EQ\enbleu{T}\enbleu{I}G\enbleu{N}\enbleu{S} Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A H\enbleu{R}G\enbleu{T}GEGS\enbleu{S} Q\enbleu{S} V\enbleu{E}SS Q\enbleu{S} WX\enbleu{I}SR\enbleu{I}\enbleu{N}U \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{E} \\
+      \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A\enbleu{S}.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}{The first word is THIL}
+  \color{black}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+  
+    \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+      e\mapsto t\quad t\mapsto z \quad h\mapsto i\quad i\mapsto o\quad n\mapsto f\quad r\mapsto k\quad s\mapsto l 
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+
+  \color{vert}
+  \tiny{c =
+    \begin{tabular}[t]{l}
+      \enbleu{T}\enbleu{H}\enbleu{I}\enbleu{S} EGX\enbleu{R}\enbleu{S}\enbleu{E} Q\enbleu{I}D\enbleu{S} \enbleu{T}G \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{R}GRXE\enbleu{E} NGX \enbleu{T}G \enbleu{T}\enbleu{H}\enbleu{E} H\enbleu{R}\enbleu{I}\enbleu{N}E\enbleu{I}HS\enbleu{E}\enbleu{S} Q\enbleu{N}R \enbleu{T}\enbleu{E}E\enbleu{H}\enbleu{N}\enbleu{I}JX\enbleu{E}\enbleu{S} GY \\
+      \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{N}U EGDHX\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{S} Q\enbleu{N}R EGDHX\enbleu{T}\enbleu{E}\enbleu{R} \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A\enbleu{S} V\enbleu{I}\enbleu{T}\enbleu{H} YGEX\enbleu{S} G\enbleu{N} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T} \\
+      \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N. \enbleu{T}\enbleu{H}\enbleu{E} EGX\enbleu{R}\enbleu{S}\enbleu{E} \enbleu{I}\enbleu{S} \enbleu{E}YY\enbleu{E}E\enbleu{T}\enbleu{I}C\enbleu{E}SN \enbleu{S}HS\enbleu{I}\enbleu{T} \enbleu{I}\enbleu{N}\enbleu{T}G \enbleu{T}VG HQ\enbleu{R}\enbleu{T}\enbleu{S}. Y\enbleu{I}\enbleu{R}\enbleu{S}\enbleu{T} \\
+      \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{R}GRXE\enbleu{I}\enbleu{N}U \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}N GY E\enbleu{R}NH\enbleu{T}GU\enbleu{R}QH\enbleu{H}N \enbleu{I}\enbleu{N}ESXR\enbleu{I}\enbleu{N}U \enbleu{H}GV DQ\enbleu{N}N ESQ\enbleu{S}\enbleu{S}\enbleu{I}EQS \\
+      Q\enbleu{N}R HGHXSQ\enbleu{R} QSUG\enbleu{R}\enbleu{I}\enbleu{T}\enbleu{H}D\enbleu{S} VG\enbleu{R}A \enbleu{E}.U. R\enbleu{E}\enbleu{S}, \enbleu{R}\enbleu{S}Q, R\enbleu{I}U\enbleu{I}\enbleu{T}QS \enbleu{S}\enbleu{I}U\enbleu{N}Q\enbleu{T}X\enbleu{R}\enbleu{E}\enbleu{S}, Q\enbleu{N}R \\
+      \enbleu{S}\enbleu{E}EG\enbleu{N}R H\enbleu{R}GC\enbleu{I}R\enbleu{I}\enbleu{N}U R\enbleu{E}\enbleu{T}Q\enbleu{I}S\enbleu{S} GY \enbleu{R}\enbleu{E}QS \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T} \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N H\enbleu{R}G\enbleu{T}GEGS\enbleu{S}, \\
+      QSUG\enbleu{R}\enbleu{I}\enbleu{T}\enbleu{H}D\enbleu{S}, Q\enbleu{N}R \enbleu{T}\enbleu{H}\enbleu{R}\enbleu{E}Q\enbleu{T}\enbleu{S}, \enbleu{E}.U. \enbleu{I}H\enbleu{S}\enbleu{E}E, C\enbleu{I}\enbleu{R}X\enbleu{S}\enbleu{E}\enbleu{S}, Y\enbleu{I}\enbleu{R}\enbleu{E}VQSS\enbleu{S}. \enbleu{H}\enbleu{E}\enbleu{N}E\enbleu{E}, NGX \\
+      V\enbleu{I}SS S\enbleu{E}Q\enbleu{R}\enbleu{N} WG\enbleu{T}\enbleu{H} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}\enbleu{E}\enbleu{T}\enbleu{I}EQS Q\enbleu{S}H\enbleu{E}E\enbleu{T}\enbleu{S} GY EGDHX\enbleu{T}\enbleu{E}\enbleu{R} Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A \\
+      \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{I}\enbleu{T}N Q\enbleu{S} V\enbleu{E}SS Q\enbleu{S} \enbleu{H}GV \enbleu{T}\enbleu{H}Q\enbleu{T} \enbleu{T}\enbleu{H}\enbleu{E}G\enbleu{R}N \enbleu{I}\enbleu{S} QHHS\enbleu{I}\enbleu{E}R \enbleu{I}\enbleu{N} \enbleu{T}\enbleu{H}\enbleu{E} \enbleu{I}\enbleu{N}\enbleu{T}\enbleu{E}\enbleu{R}\enbleu{N}\enbleu{E}\enbleu{T}. \enbleu{T}\enbleu{H}\enbleu{I}\enbleu{S} \\
+      A\enbleu{N}GVS\enbleu{E}RU\enbleu{E} V\enbleu{I}SS \enbleu{H}\enbleu{E}SH NGX \enbleu{I}\enbleu{N} R\enbleu{E}\enbleu{S}\enbleu{I}U\enbleu{N}\enbleu{I}\enbleu{N}U Q\enbleu{N}R R\enbleu{E}C\enbleu{E}SGH\enbleu{I}\enbleu{N}U \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{E} \\
+      QHHS\enbleu{I}EQ\enbleu{T}\enbleu{I}G\enbleu{N}\enbleu{S} Q\enbleu{N}R \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A H\enbleu{R}G\enbleu{T}GEGS\enbleu{S} Q\enbleu{S} V\enbleu{E}SS Q\enbleu{S} WX\enbleu{I}SR\enbleu{I}\enbleu{N}U \enbleu{S}\enbleu{E}EX\enbleu{R}\enbleu{E} \\
+      \enbleu{N}\enbleu{E}\enbleu{T}VG\enbleu{R}A\enbleu{S}.
+    \end{tabular}
+  }
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}{Going back to letter frequency and a few more guesses!!} 
+  \color{black}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Breaking the substitution cipher: example}
+  
+  \enrouge{
+    \tiny{$\pi=
+      \begin{array}[t]{l}
+        a\mapsto q\quad b\mapsto w\quad c\mapsto e\quad d\mapsto r\quad e\mapsto t\quad f\mapsto y\quad g\mapsto u\quad h\mapsto i\quad 
+        i\mapsto o\quad j\mapsto m\quad k\mapsto a\quad l\mapsto s \quad \\
+        m\mapsto d\quad n\mapsto f\quad o\mapsto g\quad p\mapsto h\quad q\mapsto j\quad r\mapsto k\quad s\mapsto l\quad t\mapsto z\quad 
+        u\mapsto x\quad v\mapsto c\quad w\mapsto v\quad x\mapsto b \quad \\
+        y\mapsto n\quad z\mapsto p\
+      \end{array}
+      $}}
+  \vspace{0.25cm}
+
+
+  \enbleu{
+  \tiny{m =
+      \begin{tabular}[t]{l}
+        THIS COURSE AIMS TO INTRODUCE YOU TO THE PRINCIPLES AND TECHNIQUES OF \\ 
+        SECURING COMPUTERS AND COMPUTER NETWORKS WITH FOCUS ON INTERNET \\
+        SECURITY. THE COURSE IS EFFECTIVELY SPLIT INTO TWO PARTS. FIRST \\ 
+        INTRODUCING THE THEORY OF CRYPTOGRAPHY INCLUDING HOW MANY CLASSICAL \\
+        AND POPULAR ALGORITHMS WORK E.G. DES, RSA, DIGITAL SIGNATURES, AND \\
+        SECOND PROVIDING DETAILS OF REAL INTERNET SECURITY PROTOCOLS, \\
+        ALGORITHMS, AND THREATS, E.G. IPSEC, VIRUSES, FIREWALLS. HENCE, YOU \\
+        WILL LEARN BOTH THEORETICAL ASPECTS OF COMPUTER AND NETWORK \\
+        SECURITY AS WELL AS HOW THAT THEORY IS APPLIED IN THE INTERNET. THIS \\
+        KNOWLEDGE WILL HELP YOU IN DESIGNING AND DEVELOPING SECURE \\
+        APPLICATIONS AND NETWORK PROTOCOLS AS WELL AS BUILDING SECURE \\
+        NETWORKS.
+      \end{tabular}
+  }}
+  \vspace{0.5cm}
+
+  \normalsize
+  \color{black}{Going back to letter frequency and a few more guesses!!}
+    \color{black}
+\end{frame}
+
 \begin{frame}{The One-Time Pad (OTP)}
   \pause
   \vspace{-0.5cm}
@@ -282,7 +857,7 @@
     \medskip{}
     \pause
 
-  \item Encryption: $\forall k\in\Kcal.\ \forall m\in\Mcal.\ E(k, m) = k \oplus m$
+  \item Encryption: $E(k, m) = k \oplus m$
     \pause
     \color{vert}
     \[
@@ -296,7 +871,7 @@
     \color{black}
     \pause
 
-  \item Decryption: $\forall k\in\Kcal.\ \forall c\in\Ccal.\ D(k, c) = k \oplus c$
+  \item Decryption: $D(k, c) = k \oplus c$
     \pause
     \color{vert}
     \[
@@ -318,7 +893,8 @@
   
 
   \begin{definition}
-    A cipher $(E, D)$ over $(\Mcal, \Ccal, \Kcal)$ satisfies perfect secrecy if for all messages $m_1, m_2\in\Mcal$ of same length ($|m_1|=|m_2|$), and for all ciphertexts $c\in\Ccal$
+A cipher $(E, D)$ over $(\Mcal, \Ccal, \Kcal)$ satisfies perfect secrecy 
+if for all messages $m_1, m_2\in\Mcal$ and ciphertext $c\in\Ccal$
     \[
     \left| Pr(E(k, m_1) = c) - Pr(E(k, m_2) = c)
     \right| \le \epsilon
@@ -423,7 +999,7 @@
 
 \begin{frame}{Limitations of OTP}
   \pause
-
+\vspace{-0.4cm}
   \begin{itemize}
 
   \onslide<2->{\item Key-length!
@@ -454,7 +1030,9 @@
       \onslide<6->{\item \enrouge{OTP is malleable}}
 
       \color{rouge}
-      \onslide<6->{given the ciphertext $c = E(k, m)$ with $m = to\ bob: m_0$, it is possible to compute the ciphertext $c' = E(k, m')$ with $m' = to\ eve: m_0$ $c':= c\oplus "to\ bob: 00\dots00"\oplus "to\ eve: 00\dots00"$}
+      \onslide<6->{given $c \,= E(k, m\,)$\, with $m\, = to\ bob \| m_0$, it is possible to compute \\
+      \qquad\; $c' = E(k, m')$ with $m' = to\ eve\| m_0$ \\
+      \qquad\; $c':= c\oplus "to\ bob \| 00\dots00"\oplus "to\ eve\| 00\dots00"$}
       \color{black}
       
     \end{itemize}
@@ -519,7 +1097,7 @@
     \end{center}
     \pause
 
-  \item Used in HTTPS and WEP
+  \item Was used in HTTPS and WEP
     \medskip{}
     \pause
 
@@ -527,7 +1105,7 @@
     \begin{itemize}
     \item \enrouge{first bytes are biased}
       
-      \enrouge{$\longrightarrow$ drop the first to 256 generated bytes}
+      \enrouge{$\longrightarrow$ drop the first 256 generated bytes}
       \pause
 
     \item \enrouge{subject to related keys attacks}
@@ -549,7 +1127,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Weaknesses of WEP}
+  \frametitle{Weaknesses of WEP (Wire Equivalent Privacy for WiFi)}
 
   \pause
   \begin{itemize}
@@ -584,6 +1162,7 @@
 
 \end{frame}
 
+\iffalse
 \begin{frame}
   \frametitle{Weaknesses of TLS}
     \vspace{-0.5cm}
@@ -601,8 +1180,8 @@
     \includegraphics[scale=0.65]{Images/AndroidBitcoinAttack.pdf}
   \end{center}
 
-
 \end{frame}
+\fi
 
 \begin{frame}
   \frametitle{Modern stream ciphers}
@@ -658,12 +1237,49 @@
 
 \end{frame}
 
-\covertopicname{Block ciphers}
+\begin{frame}
+  %\frametitle{Kerberoasting}
+
+   \begin{center}
+      \includegraphics[scale=0.55]{Images/kerberoasting.png}
+   \end{center}
+\url{https://blog.cryptographyengineering.com/2025/09/10/kerberoasting/}
+\end{frame}
+
+\begin{frame}{Kerberoasting — one-slide summary}
+  \textbf{Offline password theft}: attacker extracts Kerberos service tickets and performs \textbf{bruteforce} offline:
+\begin{itemize}
+  \item Ticket is encrypted with a key derived from the service account \textbf{password}.
+  \item Legacy ciphers (e.g. \textbf{RC4}) and NT-hash modes make cracking far faster.
+  \item Real-world risk: human-chosen service passwords remain exploitable.
+  \item Mitigations: use autogenerated long keys, disable RC4, enforce rotation and strong passwords.
+\end{itemize}\medskip
+
+\textbf{Real-world impact:} Kerberoasting remains a live threat (linked to high-impact incidents such as the \enrouge{May 2024 Ascension Health ransomware attack}) because legacy options are still enabled and admins often use human-chosen service passwords.
+\end{frame}
+
+
+
+\covertopicname{Block Ciphers}
 \date{}
 \author{}
 
 \begin{frame}
   \maketitle
+\end{frame}
+
+\begin{frame}
+  \frametitle{Recap}
+
+  Action items:
+  \begin{itemize}
+  \item Suggest exercises for practicing the use of notation.
+  \item Hard to introduce every symbol, e.g. $\|$, $\#\{ \cdot \}$, $|\{ \cdot \}|$,
+  \item[$\checkmark$] Keep on interrupting me, when I lose you!
+  \item[$\checkmark$] Request: Practical examples from case studies and news.
+  \end{itemize}\bigskip
+
+  We made it until Block Ciphers section.
 \end{frame}
 
 \begin{frame}
@@ -682,6 +1298,13 @@
   \hspace{1cm}\envert{3DES: $\ell=64$, $k=168$}
 
   \hspace{1cm}\envert{AES: $\ell=128$, $k=128, 192, 256$}
+  \bigskip{}
+
+  Notation: 
+ 
+  \hspace{1cm}$\mathcal{K} = \{0, 1\}^k$, $\mathcal{M} = \mathcal{C} = \{0, 1\}^\ell$. 
+    
+    \hspace{1cm}We use capital letters for blocks, i.e. $K \in \mathcal{K}$, $M\in \mathcal{M}$, $C\in \mathcal{C}$.
 \end{frame}
 
 \begin{frame}
@@ -795,39 +1418,65 @@
 
   \frametitle{What about double DES (2DES)?}
   \pause
+\vspace{-0.4cm}
 
   \begin{itemize}
-  \item $E_{2DES}((K_1, K_2), M) = E_{DES}(K_1, E_{DES}(K_2, M))$
+  \item $E_{2DES}((K_1, K_2), M) = E_{DES}(K_1, E_{DES}(K_2, M))$\medskip
 
     \begin{center}
-      \includegraphics[scale=0.25]{Images/2DES.pdf}
-    \end{center}
-    \pause
-    $\Rightarrow
-    \begin{array}[t]{ll}
-      \text{For } m \text{ and } c \text{ such that } E_{2DES}((k_1, k_2), m) = c \text{ we have} \\
-      \text{that } E_{DES}(k_2, m) = D_{DES}(k_1, c)
-    \end{array}
-    $
+     % \includegraphics[scale=0.25]{Images/2DES.pdf}
+      \begin{tikzpicture}[node distance=2cm, >=Stealth]
 
+  % Style definitions
+  \tikzstyle{block} = [draw, rectangle, minimum width=1.8cm, minimum height=1cm, align=center]
+  \tikzstyle{line} = [->, thick]
+
+  % Plaintext (left)
+  \node (m) {$M$};
+
+  % Encryption blocks (middle)
+  \node[block, right=of m] (E1) {$E_{DES}(K_2, M)$};
+
+  \node[right=of E1] (cp) {$C'$};
+
+
+  \node[block, right=of cp] (E2) {$E_{DES}(K_1, \cdot)$};
+
+  % Ciphertext (right)
+  \node[right=of E2] (c) {$C$};
+
+  % Draw arrows
+  \draw[line] (m) -- (E1);
+  \draw[line] (E1) -- (cp);
+  \draw[line] (cp) -- (E2);
+  \draw[line] (E2) -- (c);
+
+\end{tikzpicture}\medskip
+    \end{center}
+
+    \pause
+    
+    For $M$ and $C$ such that $E_{2DES}((K_1, K_2), M) = C$ we have that 
+     \[ E_{DES}(K_2, M) = C' =  D_{DES}(K_1, C) \]
+    
     \medskip{}
     \pause
-  \item 2DES admits a meet-in-the-middle attack that reduces the time for key recovery from $2^{112}$ for an exhaustive search to $2^{63}$. Given $M = (m_1, \dots, m_{10})$ and $C = (E_{2DES}((k_1, k_2), m_1), \dots, E_{2DES}((k_1, k_2), m_{10}))$
+  \item Meet-in-the-middle attack reduces the time for key recovery from $2^{112}$ to $2^{63}$.\\ Given $\mathbf{M} = (M_1, \dots, M_{10})$ and $\mathbf{C} = (E_{2DES}((K_1, K_2), M_1), \dots, E_{2DES}((K_1, K_2), M_{10}))$
     \pause
     \[
     \hspace{-0.25cm}\begin{array}{l}
       \left.
         \begin{array}[c]{l}
-          \text{- For all possible } k_2{, compute\, } E_{DES}(k_2, M) \\
-          \text{- Sort table according to the resulting } E_{DES}(k_2, M)
+          \text{- For all possible } K_2{, compute\, } E_{DES}(K_2, \mathbf{M}) \\
+          \text{- Sort table according to the resulting } E_{DES}(K_2, \mathbf{M})
         \end{array}
       \right\} 2^{56}\text{log}(2^{56})
       \pause
       \\
       \left.
         \begin{array}[c]{l}
-          \text{- For each possible } k_1{, compute\, } D_{DES}(k_1, C) \\
-          \text{- Look up in the table if } D_{DES}(k_1, C) = E_{DES}(k_2, M)
+          \text{- For each possible } K_1{, compute\, } D_{DES}(K_1, \mathbf{C}) \\
+          \text{- Look up in the table if } D_{DES}(K_1, C) = E_{DES}(K_2, \mathbf{M})
         \end{array}
       \right\} 2^{56}\text{log}(2^{56}) \\
       \pause
@@ -866,7 +1515,7 @@
 
   \begin{itemize}
   \item $m_i:\ 4\times 4$ byte matrix, $K_i$: 128-bit key
-  \item $m_0$: plaintext, $m_{11}$: ciphertext
+  \item $m_0$: plaintext $M$, $m_{11}$: ciphertext $C$
   \item at the last round MixColumns is not applied
   \end{itemize}
 
@@ -886,6 +1535,12 @@
   \item First {\bf key-recovery attack} on full AES [A. Bogdanov, D. Khovratovich, C. Rechberger (2011)]
 
     \enrouge{$\longrightarrow$ 4 times faster than exhaustive search}
+    \bigskip{}
+
+  \item Even quantum computers offer only modest advantage (Grover's algorithm reduces security to $2^{64}$ operations).
+  
+     \enrouge{$\longrightarrow$ More on quantum computers and how they affect cryptography later in the course.}
+
   \end{itemize}
   \pause
   \bigskip{}
@@ -896,6 +1551,7 @@
       should use AES-192 and AES-256 in new projects!
     \end{tabular}
   }
+
 
 \end{frame}
 
@@ -917,51 +1573,53 @@
 
 \begin{frame}
   \frametitle{Padding - $|M| \le \ell$}
+\vspace{-0.4cm}
 
   \begin{itemize}
-  \item \enbleu{Bit padding -} append a \emph{set bit} ('1') at the end of message, and then append as many \emph{reset bits} ('0') required
+  \item \enbleu{Bit padding -} append a \emph{set bit} ('1') at the end of message, and then append as many \emph{reset bits} ('0') required.\smallskip
 
     \scriptsize
 
-    \envert{\underline{Example:} padding a 52-bits message for a 64-bits block:}
+    \envert{\textbf{Example:} padding a 52-bits message for a 64-bits block:}
 
-    \mbox{\envert{11010011 01010110 10010000 00111010 10110101 01011010 1111{\bf 1000 00000000}}}
+    \;\;\;\,\mbox{\envert{\texttt{11010011 01010110 10010000 00111010 10110101 01011010 1111{\enrouge{1000 00000000}}}}}\smallskip
 
-    \envert{padding a $64$-bits message $M$ for 64-bits blocks requires adding a padding block:}
+    \envert{Padding a $64$-bits message $M$ for 64-bits blocks requires adding a padding block:}
+    \vspace{-1.5mm}
 
-    \mbox{\envert{M$|${\bf 10000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000}}}
+    \texttt{\envert{M$\|$\enrouge{10000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000}}}
     \medskip{}
     \pause
     \normalsize
     
-  \item \enbleu{ANSI X.923 - } byte padding - pad with zeros, the last byte defines the number of padded bytes
+  \item \enbleu{ANSI X.923 - } byte padding - pad with zeros, the last byte defines the number of padded bytes.\smallskip
 
     \scriptsize
 
-    \envert{\underline{Example:} padding a 4-bytes message for 8-bytes blocks:}
+    \envert{\textbf{Example:} padding a 4-bytes message for 8-bytes blocks:}
     
-    \envert{DD DD DD DD {\bf 00 00 00 04}}
+    \texttt{\envert{DD DD DD DD \enrouge{00 00 00 04}}}\smallskip
 
-    \envert{padding a $8k$-bytes messages for 8-bytes blocks requires adding a padding block:}
+    \envert{Padding a $8k$-bytes messages for 8-bytes blocks requires adding a padding block:}
 
-    \envert{DD DD DD DD DD DD DD DD $|$ {\bf 00 00 00 00 00 00 00 08}}
+    \texttt{\envert{DD DD DD DD DD DD DD DD $\|$ \enrouge{ 00 00 00 00 00 00 00 08}}}
     \medskip{}
     \pause
 
     \normalsize
  
   \item \enbleu{PKCS\#7 - } byte padding - the value of each added byte is the total number of padding bytes. The padding will be
-    01, or 02 02, or 03 03 03, or 04 04 04 04, \emph{etc.}
+    01, or 02 02, or 03 03 03, or 04 04 04 04, \emph{etc.}\smallskip
 
     \scriptsize
 
-    \envert{\underline{Example:} padding a 4-bytes message for 8-bytes blocks:}
+    \envert{\textbf{Example:} padding a 4-bytes message for 8-bytes blocks:}
 
-    \envert{DD DD DD DD {\bf 04 04 04 04}}
+    \texttt{\envert{DD DD DD DD {\enrouge{04 04 04 04}}}}\smallskip
 
-    \envert{padding a $8$-bytes message for 8-bytes blocks requires adding a padding block:}
+    \envert{Padding a $8$-bytes message for 8-bytes blocks requires adding a padding block:}
 
-    \envert{DD DD DD DD DD DD DD DD $|$ {\bf 08 08 08 08 08 08 08 08}}
+    \texttt{\envert{DD DD DD DD DD DD DD DD $\|$ {\enrouge 08 08 08 08 08 08 08 08}}}
 
     \normalsize
 
@@ -983,7 +1641,7 @@
   \begin{itemize}
   \item $M$ is padded:
 
-    \hspace{1cm}$\Rightarrow\ M' = M || P$ such that $|M'| = m\times \ell$
+    \hspace{1cm}$\Rightarrow\ M' = M || P$ such that $|M'| = m\times \ell$ for some $m$.
     \pause
     \medskip{}
     
@@ -1011,20 +1669,57 @@
   \frametitle{Weakness of ECB}
   \pause
 
-  \includegraphics[scale=0.5]{Images/ECB.pdf}
+  %\includegraphics[scale=0.5]{Images/ECB.pdf}
+\begin{center}
+  \begin{tikzpicture}[node distance=1cm, >=Stealth]
+
+  % Style definitions
+  \tikzstyle{block} = [draw, rectangle, minimum width=1.6cm, minimum height=1cm, align=center]
+  \tikzstyle{line} = [->, thick]
+
+  % Plaintext (top row)
+  \node (m1) {$M_1$};
+  \node[right=1.5cm of m1] (m2) {$M_2$};
+  \node[right=0.75cm of m2] (dots) {$\cdots$};
+  \node[right=0.75cm of dots] (mn) {$M_m$};
+
+  % Encryption blocks (middle row)
+  \node[block, below=of m1] (E1) {$E(K, M_1)$};
+  \node[block, below=of m2] (E2) {$E(K, M_2)$};
+  \node[block, below=of mn] (En) {$E(K, M_m)$};
+
+  % Ciphertext (bottom row)
+  \node[below=of E1] (c1) {$C_1$};
+  \node[below=of E2] (c2) {$C_2$};
+  \node[right=0.75cm of c2] (dots) {$\cdots$};
+
+  \node[below=of En] (cn) {$C_m$};
+
+  % Draw arrows (plaintext → encrypt → ciphertext)
+  \draw[line] (m1) -- (E1);
+  \draw[line] (m2) -- (E2);
+  \draw[line] (mn) -- (En);
+
+  \draw[line] (E1) -- (c1);
+  \draw[line] (E2) -- (c2);
+  \draw[line] (En) -- (cn);
+
+\end{tikzpicture}
+\end{center}
   \pause
-  \bigskip{}
-  \bigskip{}
-  \bigskip{}
-  
-  \enrouge{Problem: $\forall i,j.\ m_i = m_j\ \Rightarrow\ c_i= E(k, m_i) = E(k, m_j) = c_j$}
+
+  {\Large
+  \enrouge{Problem: $\forall i,j.\ M_i = M_j\ \Rightarrow\ c_i= E(k, M_i) = E(k, M_j) = c_j$}
   \medskip{}
   
-  \quad \quad \enrouge{$\Rightarrow$ Malleable and weak to frequency analysis!}
+  
+  \quad \quad \enrouge{$\Rightarrow$ Malleable and vulnerable agains frequency analysis!}}
 
   \bigskip{}
   
 \end{frame}
+
+
 
 \begin{frame}
 
@@ -1040,6 +1735,93 @@
      
 \end{frame}
 
+
+
+
+\begin{frame}{Cipher-block chaining (CBC) mode}
+\tikzset{XOR/.style={fill=black!15,draw,minimum size=13pt,circle,append after command={
+        [shorten >=\pgflinewidth, shorten <=\pgflinewidth,]
+        (\tikzlastnode.north) edge (\tikzlastnode.south)
+        (\tikzlastnode.east) edge (\tikzlastnode.west)
+        }
+    }
+}
+\tikzstyle{encrypt}=[draw,fill=black!15,rectangle,minimum size=20pt,inner sep=0pt]
+
+  $(E, D)$ a block cipher. IV chosen at random in $\{0, 1\}^\ell. $\smallskip
+
+  \begin{center}
+\begin{tikzpicture}[scale=0.80]
+    \newcommand{\n}{3}
+    \foreach \nr in {1, ..., \n}{
+        \node (M\nr)            at (0,{(\n-\nr)*2}) {$M_\nr$};
+        \node (x\nr)[XOR]       at (2,{(\n-\nr)*2}) {};
+        \node (E\nr)[encrypt]   at (4,{(\n-\nr)*2}) {$E$};
+        \node (C\nr)            at (6,{(\n-\nr)*2}) {$C_\nr$};
+
+        \node (K\nr)            at (4,{(\n-\nr)*2+1.1}) {$K$};
+
+        \draw[->,very thick] (M\nr) -- (x\nr);
+        \draw[->,very thick] (x\nr) -- (E\nr);
+        \draw[->,very thick] (E\nr) -- (C\nr);
+
+        \draw[->,very thick] (K\nr) -- (E\nr);
+    }
+
+    \foreach \nr in {2, ..., \n}{
+        \pgfmathtruncatemacro{\tmp}{\nr-1}
+        \draw[->,very thick] (5,{(\n-\tmp)*2}) -- (5, {(\n-\tmp)*2-0.6}) -- (2, {(\n-\nr)*2+1.4}) -- (x\nr);
+    }
+    \draw[very thick] (5,0) -- (5, -0.6) -- (2, -0.6) -- (2, -0.8);
+
+    \node (IV) at (2,{\n*2}) {$IV$};
+    \draw[->, very thick] (IV) -- (x1);
+    \node (C0)            at (6,{\n*2}) {$C_0$};
+    \draw[->, very thick] (IV) -- (C0);
+
+    \node (Mx) at (0,-1) {$\vdots$};
+    \node (xx) at (2,-1) {$\vdots$};
+    \node (Ex) at (4,-1) {$\vdots$};
+    \node (Cx) at (6,-1) {$\vdots$};
+\end{tikzpicture}
+\begin{tikzpicture}[scale=0.80]
+    \newcommand{\n}{3}
+    \foreach \nr in {1, ..., \n}{
+        \node (C\nr)            at (0,{(\n-\nr)*2}) {$C_\nr$};
+        \node (D\nr)[encrypt]   at (2,{(\n-\nr)*2}) {$D$};
+        \node (x\nr)[XOR]       at (4,{(\n-\nr)*2}) {};
+        \node (M\nr)            at (6,{(\n-\nr)*2}) {$M_\nr$};
+
+        \node (K\nr)            at (2,{(\n-\nr)*2+1.1}) {$K$};
+
+        \draw[->,very thick] (C\nr) -- (D\nr);
+        \draw[->,very thick] (D\nr) -- (x\nr);
+        \draw[->,very thick] (x\nr) -- (M\nr);
+
+        \draw[->,very thick] (K\nr) -- (D\nr);
+    }
+
+    \foreach \nr in {2, ..., \n}{
+        \pgfmathtruncatemacro{\tmp}{\nr-1}
+        \draw[->,very thick] (1,{(\n-\tmp)*2}) -- (1,{(\n-\tmp)*2-0.6}) -- (4,{(\n-\tmp)*2-0.6}) -- (x\nr);
+    }
+    \draw[very thick] (1,0) -- (1, -0.6) -- (4, -0.6) -- (4, -0.7);
+
+
+    \node (IV) at (4,{\n*2}) {$IV$};
+    \draw[->, very thick] (IV) -- (x1);
+    \node (C0)            at (0,{\n*2}) {$C_0$};
+    \draw[->, very thick] (C0) -- (IV);
+
+    \node (Mx) at (0,-1) {$\vdots$};
+    \node (xx) at (2,-1) {$\vdots$};
+    \node (Ex) at (4,-1) {$\vdots$};
+    \node (Cx) at (6,-1) {$\vdots$};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\iffalse
 \begin{frame}{Cipher-block chaining (CBC) mode: encryption}
   \vspace{-0.5cm}
   \begin{center}
@@ -1052,7 +1834,6 @@
   \end{tabular}
 \end{center}
   
-
 \end{frame}
 
 \begin{frame}
@@ -1103,6 +1884,17 @@
 
   
 \end{frame}
+\fi
+
+\iffalse
+\begin{frame}{Counter (CTR) mode}
+  \vspace{-0.7cm}
+
+    $(E, D)$ a block cipher. $\$$ chosen at random in $\{0, 1\}^\ell$. $F = E(K,\cdot)$ \bigskip \medskip
+
+	\bigimagewithcaption{ctr-with-dec.pdf}{Source: The Joy of Cryptography}
+\end{frame}
+\fi
 
 \begin{frame}
 
@@ -1131,6 +1923,8 @@
     \includegraphics[scale=0.6]{Images/sweet32.pdf}
   \end{center}
 \end{frame}
+
+
 
 \begin{frame}{The key management problem}
 
@@ -1174,14 +1968,53 @@
     \item subject to malleability attacks\medskip
     \end{itemize}
   \item Block ciphers - use AES not DES\medskip
-  \item CBC mode is more secure that ECB but not resilient to packets loss\medskip
+  \item CBC mode is more secure that ECB but less resilient to packets loss\medskip
   \item CTR mode more secure than ECB and parallelisable \medskip
-  \item Keep up to date with cryptanalysis advances and standards.\\  
+  \item Keep up to date with cryptanalytic advances and standards.\\  
   Modern symmetric encryption also guarantees authenticity \\$\rightarrow$ no malleability
   \medskip
   \item Do not implement crypto lightly - use public reference implementations
  \end{itemize}
 \end{frame}
+
+
+\begin{frame}{Authenticated Encryption: formal definition}
+	\begin{columns}[c]
+		\begin{column}{0.4\textwidth}
+			\definitionbox{Authenticated Encryption}{
+				A SKE scheme $\Sigma$ is a secure authenticated encryption (AE) scheme if the following two libraries are indistinguishable:
+			}
+		\end{column}
+		\begin{column}{0.6\textwidth}
+			\begin{center}
+				\sslinked{
+					\sslibrary{\Sigma}{ae-real}{
+						$K \twoheadleftarrow \Sigma.\mathcal{K}$\\[1em]
+						\sslibrarysubroutine{ae.enc}{M}{
+							return $\Sigma.\texttt{Enc}(K, M)$
+						}{1}\\[1em]
+						\sslibrarysubroutine{ae.dec}{C}{
+							return $\Sigma.\texttt{Dec}(K, C)$
+						}{1}
+					}{0.75}
+				}{\approxeq}{
+					\sslibrary{\Sigma}{ae-rand}{
+						\sslibrarysubroutine{ae.enc}{M}{
+							$C \twoheadleftarrow \Sigma.\mathcal{C}(|M|)$\\
+							$\mathcal{D}[C] \coloneq M$\\
+							return $C$
+						}{1}\\[1em]
+						\sslibrarysubroutine{ae.dec}{C}{
+							if $\mathcal{D}[C]$ defined: return $\mathcal{D}[C]$\\
+							else: return $\texttt{err}$
+						}{1}
+					}{0.75}
+				}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
 
 
 \end{document}

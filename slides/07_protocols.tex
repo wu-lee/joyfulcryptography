@@ -1,6 +1,20 @@
-\documentclass[10pt,dvipsnames,svgnames]{beamer}
+%\documentclass[10pt,dvipsnames,svgnames]{beamer}
+\documentclass[aspectratio=169, lualatex,  10pt,dvipsnames,svgnames]{beamer} % handout,
+\makeatletter\def\input@path{{theme/}}\makeatother\usetheme{cipher}
 
+\title{Computer Security: Introduction}
+\author{Markulf Kohlweiss}
+\subject{Introduction to Applied Cryptography covering cryptographic primitives, protocols, security goals, and real-world applications from basic concepts to advanced topics like TLS and zero-knowledge proofs.}
+\keywords{cryptography, security, encryption, authentication, hash functions, TLS, protocols, provable security}
+\institute{University of Edinburgh, School of Informatics}
+\instituteimage{images/edu-white.png}
+\date{\today}
+\coversubtitle{INFR10067\\Fall 2025}
+\coverpartname{Cryptography}
+\covertopicname{Introduction to Protocols}
+\coverwebsite{}
 
+\iffalse
 \mode<presentation>
 {
   \usetheme{default}
@@ -18,6 +32,7 @@
 \setbeamercolor{block body alerted}{fg=black, bg=Red!15}
 \setbeamercolor{block title example}{fg=black, bg=SeaGreen!20}
 \setbeamercolor{block body example}{fg=black, bg=Green!15}
+\fi
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
@@ -120,11 +135,11 @@
 \newcommand{\Tcal}{\mathcal{T}}
 \newcommand{\Xcal}{\mathcal{X}}
 
-\newcommand{\Aenc}{\mathsf{aenc}}
+\newcommand{\Aenc}{E}
 \newcommand{\Pair}[2]{\langle{#1},{#2}\rangle}
 \newcommand{\Pk}[1]{\mathsf{pk}_{#1}}
 \newcommand{\Sk}[1]{\mathsf{sk}_{#1}}
-\newcommand{\h}{\mathsf{h}}
+\newcommand{\h}{H}
 
 \usepackage{wasysym}
 \usepackage{amsmath}
@@ -140,7 +155,7 @@
 
 \title{Cryptographic protocols}
 
-\author{{Myrto Arapinis} and {\bf Markulf Kohlweiss} \\
+\author{Markulf Kohlweiss\\
   School of Informatics \\
   University of Edinburgh}
 
@@ -161,8 +176,8 @@
   \item eCommerce,
   \item eVoting,
   \item ePassports,
-  \item Mobile phones,
-  \item \dots
+  \item cloud everything,
+  \item \dots  \hfill cryptography is everywhere!
   \end{itemize}
   \pause
   \vspace{0.3cm}
@@ -179,34 +194,67 @@
 
 \begin{frame}
   \frametitle{The attacker controls the network (1)}
-
+\vspace{-0.5cm}
   \begin{center}
-    \includegraphics[scale=0.5]{Images/TraceRoute1.pdf}
+    \includegraphics[scale=0.48]{Images/TraceRoute1.pdf}
   \end{center}
 
 \end{frame}
 
 \begin{frame}
   \frametitle{The attacker controls the network (2)}
+  \vspace{-0.5cm}
 
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \vspace{-1cm}
+       \begin{itemize}
+       \item
+       In July 2013, the NSA was accused of wiretapping large parts of data on the German Internet Exchange Point DE-CIX which was denied by Level 3. 
+       
+       \item A few months later, Level 3 was accused of tapping connections between Google and Yahoo data centers.
+       \end{itemize}
+
+       \url{https://en.wikipedia.org/wiki/Level_3_Communications}
+    \end{column}
+
+    \begin{column}{0.6\textwidth}
   \begin{center}
-    \includegraphics[scale=0.35]{Images/SnowdenRevelations.pdf}
+    \includegraphics[scale=0.30]{Images/SnowdenRevelations.pdf}
   \end{center}
+\end{column}
+\end{columns}
 
 \end{frame}
 
 \begin{frame}
   \frametitle{The attacker controls the network (3)}
-  \medskip{}
-  \medskip{}
-  \bigskip{}
+  \vspace{-0.5cm}
 
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \vspace{-1cm}
+       \begin{itemize}
+       \item
+       In July 2013, the NSA was accused of wiretapping large parts of data on the German Internet Exchange Point DE-CIX which was denied by Level 3. 
+       
+       \item A few months later, Level 3 was accused of tapping connections between Google and Yahoo data centers.
+       \end{itemize}
+
+       \url{https://en.wikipedia.org/wiki/Level_3_Communications}
+    \end{column}
+
+    \begin{column}{0.6\textwidth}
   \begin{center}
-    \includegraphics[scale=0.5]{Images/TraceRoute2.pdf}
+    \includegraphics[scale=0.4]{Images/TraceRoute2.pdf}
   \end{center}
+\end{column}
 
+\end{columns}
 \end{frame}
 
+
+\iffalse
 \begin{frame}
   \frametitle{All messages can be intercepted by an attacker (1)}
 
@@ -227,6 +275,7 @@
     \enrouge{Man in the Middle (MitM) -} An attacker can \enrouge{intercept} packets, but also \enrouge{alter}, \enrouge{forge new}, and \enrouge{inject} packets
   \end{block}
 \end{frame}
+\fi
 
 \begin{frame}
   \frametitle{More complex systems needed...}
@@ -317,8 +366,9 @@
   \frametitle{Cryptographic protocols}
 
   \begin{block}{Cryptographic protocols}
-    Programs relying on \enbleu{cryptographic primitives} and whose goal is the establishment of \enbleu{``secure'' communications}.
+    A distributed algorithm employing \enbleu{cryptographic primitives} \\ \hfill and whose goal is \enbleu{``secure'' communication (or computation)}.
   \end{block}
+  
   \vspace{0.5cm}
   \pause
 
@@ -331,10 +381,11 @@
 
 \begin{frame}
   \frametitle{Numerous deployed protocols are flawed...}
+  \vspace{-0.5cm}
+
   \hfill ... and end up in the news :(
   \begin{center}
-    \vspace{-0.25cm}
-    \includegraphics[scale=0.45]{Images/news.pdf}
+    \includegraphics[scale=0.40]{Images/news.pdf}
   \end{center}
 
 \end{frame}
@@ -342,12 +393,17 @@
 \begin{frame}
   \frametitle{Logical attacks}
   \begin{center}
-    \enrouge{Many of these attacks do not even break the crypto primitives!!}
+    \enrouge{Many of these attacks do not even break the cryptographic primitives!!}
+        \includegraphics[scale=0.40]{images/backdoor.png}
   \end{center}
 \end{frame}
 
+\iffalse
+
 \begin{frame}
   \frametitle{Example of a logical attack}
+
+  \vspace{-0.5cm}
 
   Assume a commutative symmetric encryption scheme 
   \[
@@ -363,7 +419,7 @@
       & & & & & & \multicolumn{3}{c}{\onslide<6->{\enrouge{No authentication!}}} \\
       \onslide<2->{$A$} & & \onslide<2->{$B$} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{$A$} & & \onslide<7->{\enrouge{$I$}} \\
       \onslide<2->{\vline} & & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & & \onslide<7->{\vline} \\
-      \onslide<3->{\tiny{$\mathsf{new}\ K_A$}} & & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<8->{\tiny{$\mathsf{new}\ K_A$}} & & \onslide<7->{\vline} \\
+       \onslide<3->{\tiny{$\mathsf{new}\ K_A$}}  & & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<8->{\tiny{$\mathsf{new}\ K_A$}} & & \onslide<7->{\vline} \\
       \onslide<2->{\vline} & \onslide<3->{$\xrightarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\text{pin:3443}\}_{K_A}}$} & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & \onslide<8->{$\xrightarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\text{pin: 3443}\}_{K_A}}$} & \onslide<7->{\vline}\\
       \onslide<2->{\vline} & & \onslide<3->{\tiny{$\mathsf{new}\ K_B$}} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & & \onslide<9->{\tiny{$\mathsf{new}\ K_I$}} \\
       \onslide<2->{\vline} & \onslide<4->{$\xleftarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}$} & \onslide<2->{\vline} & & \onslide<6->{\enrouge{\vline}} & & \onslide<7->{\vline} & \onslide<9->{$\xleftarrow[\phantom{\{\{\text{pin: 3443}\}_{K_A}\}_{K_B}}]{\{\{\text{pin: 3443}\}_{K_A}\}_{K_I}}$} & \onslide<7->{\vline}\\
@@ -374,7 +430,10 @@
   
 \end{frame}
 
+\fi
+
 \title{Authentication and key agreement protocols}
+\covertopicname{Authentication and key agreement protocols}
 \author{}
 \date{}
 
@@ -397,7 +456,7 @@
     \medskip{}
   \item[\enrouge{$\rightsquigarrow$}] Long-term keys are used to establish short-term \enrouge{session keys}
 
-    \envert{\emph{e.g.} TLS over HTTP, AKA for 3G, BAC for epassports, \emph{etc.}}
+    \envert{\emph{e.g.} TLS over HTTP, SSH for shell, Basic access control (BAC) protocol for ePassports, \emph{etc.}}
   \end{itemize}
 \end{frame}
 
@@ -408,19 +467,19 @@
   \medskip{}
 
   \begin{center}
-    \begin{tabular}[t]{ccccc}
-      $A$ & & $B$ \\
-      \vline & & \vline \\
-      \onslide<2->{\footnotesize{$\mathsf{new}\ N_A$}} & & \vline \\
-      \vline & \onslide<3->{$\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$} & \vline \\
-      \vline & & \onslide<4->{\footnotesize{$\mathsf{new}\ N_B$}} \\
-      \vline & \onslide<5->{$\xleftarrow[\hspace{4cm}]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline \\
-      \vline & \onslide<6->{$\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$} & \vline \\
+    \begin{tabular}[t]{ccccccc}
+     & $A$ & & $B$ \\
+     & \vline & & \vline \\
+      \onslide<2->{\footnotesize{$\mathsf{new}\ N_A$}} & \vline & & \vline \\
+     & \vline & \onslide<3->{$\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$} & \vline \\
+     & \vline & & \vline & \onslide<4->{\footnotesize{$\mathsf{new}\ N_B$}} \\
+     & \vline & \onslide<5->{$\xleftarrow[\hspace{4cm}]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline \\
+     & \vline & \onslide<6->{$\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$} & \vline \\
       \\
       \onslide<7->{$^{k_{AB}\leftarrow \h(N_A, N_B)}$} & & \onslide<7->{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}
     \end{tabular}
   \end{center}
-  \footnotesize{\engris{[N. Roger, M. Schroeder, Michael. ``Using encryption for authentication in large networks of computers''. Communications of the ACM (December 1978)]}}
+  \footnotesize{\engris{Roger M. Needham and Michael D. Schroeder. 1978. Using encryption for authentication in large networks of computers. Commun. ACM 21, 12 (Dec. 1978)}}
 \end{frame}
 
 \begin{frame}
@@ -445,23 +504,45 @@
   \pause
   \small{
   \begin{center}
-    \begin{tabular}[t]{ccccc}
-      \hspace{-1.5cm}$A$ & & $I$ & & $B$ \\
-      \hspace{-1.5cm}\vline & & \vline & & \vline \\
-      \hspace{-1.5cm}\onslide<2->{\footnotesize{$\mathsf{new}\ N_A$}} & & \vline & & \vline \\
-      \hspace{-1.5cm}\vline & \onslide<3->{$\xrightarrow[]{\Aenc(\Pk{I}, \Pair{N_A}{A})}$} & \vline & & \vline \\
-      \hspace{-1.5cm}\vline & & \vline & \onslide<4->{$\xrightarrow[]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$} & \vline \\
-      \hspace{-1.5cm}\vline & & \vline & & \onslide<5->{\footnotesize{$\mathsf{new}\ N_B$}} \\
-      \hspace{-1.5cm}\vline & & \vline & \onslide<6->{$\xleftarrow[]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline \\
-      \hspace{-1.5cm}\vline & \onslide<7->{$\xleftarrow[]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline & & \vline \\
-      \hspace{-1.5cm}\vline & \onslide<8->{$\xrightarrow[\phantom{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}]{\Aenc(\Pk{I}, \Pair{N_B}{A})}$} & \vline & & \vline \\
-      \hspace{-1.5cm}\vline & & \vline & \onslide<9->{$\xrightarrow[]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$} & \vline \\
-
-      \hspace{-0.8cm}\onslide<10->{\enrouge{$^{k_{AI}\leftarrow \h(N_A, N_B)}$}} & & \onslide<10->{\enrouge{$^{k_{AI}\leftarrow \h(N_A, N_B)}$}} & & \hspace{-1cm}\onslide<10->{\enrouge{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}} \\
-      \hspace{-0.8cm}& & \onslide<10->{\enrouge{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}}
+    \begin{tabular}[t]{ccccccc}
+      & $A$ & & $I$ & & $B$ \\
+      & \vline & & \vline & & \vline \\
+      \onslide<2->{\footnotesize{$\mathsf{new}\ N_A$}} &  \vline  & & \vline & & \vline \\
+      & \vline & \onslide<3->{$\xrightarrow[]{\Aenc(\Pk{I}, \Pair{N_A}{A})}$} & \vline & & \vline \\
+      & \vline & & \vline & \onslide<4->{$\xrightarrow[]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$} & \vline \\
+      & \vline & & \vline & & \vline & \onslide<5->{\footnotesize{$\mathsf{new}\ N_B$}} \\
+      & \vline & & \vline & \onslide<6->{$\xleftarrow[]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline \\
+      & \vline & \onslide<7->{$\xleftarrow[]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline & & \vline \\
+      & \vline & \onslide<8->{$\xrightarrow[\phantom{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}]{\Aenc(\Pk{I}, \Pair{N_B}{A})}$} & \vline & & \vline \\
+      & \vline & & \vline & \onslide<9->{$\xrightarrow[]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$} & \vline \\
+      &\onslide<10->{\enrouge{$^{k_{AI}\leftarrow \h(N_A, N_B)}$}} & & \onslide<10->{\enrouge{$^{k_{AI}\leftarrow \h(N_A, N_B)}$}} & &  \\
+      & & & \onslide<10->{\enrouge{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}}& & \hspace{-1cm}\onslide<10->{\enrouge{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}}
     \end{tabular}
   \end{center}}
 \footnotesize{\engris{[G. Lowe. ``An attack on the Needham-Schroeder public key authentication protocol''. Information Processing Letters (November 1995)]}}
+\end{frame}
+
+\begin{frame}{NSPK: Lowe's attack on authentication}{An awkward conversation}
+  \small{
+  \begin{center}
+    \begin{tabular}[t]{ccccccc}
+      &\onslide<1->{\enrouge{$^{k_{AI}\leftarrow \h(N_A, N_B)}$}} & & \onslide<1->{\enrouge{$^{k_{AI}\leftarrow \h(N_A, N_B)}$}} & &  \\
+      & & & \onslide<1->{\enrouge{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}}& & \hspace{-1cm}\onslide<1->{\enrouge{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}}\\ \smallskip
+      & $A$ & & $I$ & & $B$ \\
+      & \vline & & \vline & & \vline \\
+%      \onslide<2->{\footnotesize{$\mathsf{new}\ N_A$}} &  \vline  & & \vline & & \vline \\
+%      & \vline & \onslide<3->{$\xrightarrow[]{\Aenc(\Pk{I}, \Pair{N_A}{A})}$} & \vline & & \vline \\
+%      & \vline & & \vline & \onslide<4->{$\xrightarrow[]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$} & \vline \\
+%      & \vline & & \vline & & \vline & \onslide<5->{\footnotesize{$\mathsf{new}\ N_B$}} \\
+      & \vline & & \vline & \onslide<2->{$\xleftarrow[]{\Aenc(k_{AB}, \text{"I love you!"})}$} & \vline \\
+      & \vline & \onslide<3->{$\xleftarrow[]{\Aenc(k_{AB}, \text{"I love you!"})}$} & \vline & & \vline \\
+      & \vline & \onslide<4->{$\xrightarrow[]{\Aenc(k_{AI}, \text{"I really don't!"})}$} & \vline & & \vline \\
+      & \vline & & \vline & \onslide<5->{$\xrightarrow[]{\Aenc(k_{AI}, \text{"I really don't!"})}$} & \vline \\
+         \end{tabular}
+  \end{center}}
+  Alice dislikes Ivan, but likes Bob.\smallskip \\
+  Bob thinks he is talking to Alice, but is actually talking to the intruder Ivan relaying messages to Alice. 
+%\footnotesize{\engris{G. Lowe. ``An attack on the Needham-Schroeder public key authentication protocol''. Information Processing Letters (November 1995)}}
 \end{frame}
 
 \begin{frame}
@@ -469,16 +550,16 @@
 
   \begin{block}{The Needham-Schroeder-Lowe (NSL) protocol}
     \begin{center}
-      \begin{tabular}[t]{ccccc}
-        $A$ & & $B$ \\
-        \vline & & \vline \\
-        \footnotesize{$\mathsf{new}\ N_A$} & & \vline \\
-        \vline & $\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$ & \vline \\
-        \vline & & \footnotesize{$\mathsf{new}\ N_B$} \\
-        \vline & $\xleftarrow[\hspace{4cm}]{\Aenc(\Pk{A}, \Pair{N_A}{\Pair{N_B}{\enrouge{B}}})}$ & \vline \\
-        \vline & $\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$ & \vline \\
+      \begin{tabular}[t]{ccccccc}
+        & $A$ & & $B$ \\
+        & \vline & & \vline \\
+        \footnotesize{$\mathsf{new}\ N_A$} & \vline & & \vline \\
+        & \vline & $\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_A}{A})}$ & \vline \\
+        & \vline & & \vline & \footnotesize{$\mathsf{new}\ N_B$} \\
+        & \vline & $\xleftarrow[\hspace{4cm}]{\Aenc(\Pk{A}, \Pair{N_A}{\Pair{N_B}{\enrouge{B}}})}$ & \vline \\
+        & \vline & $\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$ & \vline \\
         \\
-        $^{k_{AB}\leftarrow \h(N_A, N_B)}$ & & $^{k_{AB}\leftarrow \h(N_A, N_B)}$
+        & $^{k_{AB}\leftarrow \h(N_A, N_B)}$ & & $^{k_{AB}\leftarrow \h(N_A, N_B)}$
       \end{tabular}
     \end{center}
   \end{block}
@@ -490,7 +571,7 @@
 
   \begin{itemize}
   \item The NSL protocol is secure against an attacker that controls the network. 
-  \item What if the Alice's and Bob's private keys get compromised?
+  \item What if Alice's and Bob's private keys get compromised?
   \item What if the government forces Alice and Bob to reveal their private keys?
   \item Can we still protect confidentiality? 
   \end{itemize}
@@ -503,17 +584,18 @@
 
 \begin{frame}
   \frametitle{The Station-to-Station (StS) protocol}
+  \vspace{-0.5cm}
 
       \begin{center}
-      \begin{tabular}[t]{ccccc}
-        $A$ & & $B$ \\
-        \vline & & \vline \\
-        \onslide<2->{\footnotesize{$\mathsf{pick}\ p$}} & & \vline \\
-        \onslide<3->{\footnotesize{$x\xleftarrow[]{r}\mathbb Z_p$}} & & \vline \\
-        \vline & \onslide<4->{$\xrightarrow[\hspace{4cm}]{g,\ p,\ g^x}$} & \vline \\
-        \vline & & \onslide<5->{\footnotesize{$y\xleftarrow[]{r}\mathbb Z_p$}} \\
-        \vline & \onslide<6->{$\xleftarrow[\hspace{4cm}]{g^y, \envert{Cert_B}, \enbleu{E(g^{yx},} \envert{S(\mathsf{sk}_B}, (g^y, g^x)\envert{)}\enbleu{)}}$} & \vline \\
-        \vline & \onslide<7->{$\xrightarrow[\hspace{4cm}]{\envert{Cert_A}, \enbleu{E(g^{yx},} \envert{S(\mathsf{sk}_A}, (g^x, g^y)\envert{)}\enbleu{)}}$} & \vline \\
+      \begin{tabular}[t]{ccccccc}
+        & $A$ & & $B$ \\
+        & \vline & & \vline \\
+        \onslide<2->{\footnotesize{$\mathsf{pick}\ p$}} & \vline & & \vline \\
+        \onslide<3->{\footnotesize{$x\gets\mathbb Z_p$}} & \vline & & \vline \\
+        & \vline & \onslide<4->{$\xrightarrow[\hspace{4cm}]{g,\ p,\ g^x}$} & \vline \\
+        & \vline & & \vline & \onslide<5->{\footnotesize{$y\gets\mathbb Z_p$}} \\
+        & \vline & \onslide<6->{$\xleftarrow[\hspace{4cm}]{g^y, \envert{Cert_B}, \enbleu{E(g^{yx},} \envert{S(\mathsf{sk}_B}, (g^y, g^x)\envert{)}\enbleu{)}}$} & \vline \\
+        & \vline & \onslide<7->{$\xrightarrow[\hspace{4cm}]{\envert{Cert_A}, \enbleu{E(g^{yx},} \envert{S(\mathsf{sk}_A}, (g^x, g^y)\envert{)}\enbleu{)}}$} & \vline \\
       \end{tabular}
     \end{center}
     \onslide<2->{\begin{itemize}

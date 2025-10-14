@@ -1,4 +1,4 @@
-\documentclass[aspectratio=169, lualatex, handout, 10pt,dvipsnames,svgnames]{beamer} %
+\documentclass[aspectratio=169, lualatex, handout, 10pt,dvipsnames,svgnames]{beamer} %handout
 \makeatletter\def\input@path{{theme/}}\makeatother\usetheme{cipher}
 
 \title{Computer Security: Introduction}
@@ -164,18 +164,7 @@
 
 \section*{Basic concepts}
 
-\begin{frame}{Acknowledgements and Textbooks}
-\vspace{-0.5cm}
-\begin{itemize}
-\item Textbooks:
-  \begin{center}
-    \scalebox{0.7}{
-    \includegraphics[scale=0.35]{images/joy.png}\includegraphics[scale=0.15]{images/katzlindell.png}}
-  \end{center}
-\item Slides adapted from Myrto Arapinis and Nadim Kobeissi. \\
-Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
-\end{itemize}
-\end{frame}
+
 
 \begin{frame}{What is cryptography?}
   
@@ -199,6 +188,19 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
     \hfill\small{Jonathan Katz and Yehuda Lindell} \\
     \hfill\small{in Introduction to Modern Cryptography}
   \end{block}
+\end{frame}
+
+\begin{frame}{Acknowledgements and Textbooks}
+\vspace{-0.5cm}
+\begin{itemize}
+\item Textbooks:
+  \begin{center}
+    \scalebox{0.7}{
+    \includegraphics[scale=0.35]{images/joy.png}\includegraphics[scale=0.15]{images/katzlindell.png}}
+  \end{center}
+\item Slides adapted from Myrto Arapinis and Nadim Kobeissi. \\
+Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
+\end{itemize}
 \end{frame}
 
 \iffalse
@@ -231,7 +233,7 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
 				\item Buying stuff from the store
 				\item Any digital payment system
 				\item Messaging (WhatsApp, Signal, iMessage, Telegram)
-				\item Voice calls
+				\item Voice calls and video conferencing
 				\item Government and military systems
 				\item SSH
 				\item VPN access
@@ -242,14 +244,14 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
 			\begin{itemize}[<+->]
 				\item Disk encryption
 				\item Cloud storage
-				\item Video conferencing
-				\item Unlocking your (newer) car
+        \item Password managers
+				\item Unlocking your car
 				\item Identity card systems
 				\item Ticketing systems
 				\item DRM solutions
 				\item Private contact discovery
 				\item Cryptocurrencies
-				\item That Apple Photos feature that detects similar photos
+				%\item That Apple Photos feature that detects similar photos
 			\end{itemize}
 		\end{column}
 	\end{columns}
@@ -265,6 +267,7 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
 	\end{center}
 \end{frame}
 
+\iffalse
 \begin{frame}{Cryptographic building blocks}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
@@ -296,7 +299,9 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
 		\end{column}
 	\end{columns}
 \end{frame}
+\fi
 
+\iffalse
 \begin{frame}{Cryptographic building blocks}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
@@ -324,7 +329,7 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
 		\end{column}
 	\end{columns}
 \end{frame}
-
+\fi
 
 \begin{frame}{Important remark}
 
@@ -366,7 +371,7 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
   \item Asymmetric (public-key) Encryption
   \item Hash functions and Message Authentication Codes (MACs)
   \item Digital Signatures and Public Key Infrastructure (PKI)
-  \item Post quantum security
+  \item Post Quantum Security
   \end{itemize}
   \bigskip
   
@@ -627,7 +632,7 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
         
     \item Use frequency of digrams in English text
       \begin{center}
-        \begin{tabular}[t]{c}
+        \begin{tabular}[b]{c}
           \includegraphics[scale=0.10]{Images/digraphs.pdf}
           
         \end{tabular}
@@ -641,6 +646,22 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
     \end{itemize}
   \end{itemize}
 
+\end{frame}
+
+\begin{frame}{Frequency of letters}
+\begin{center}
+        \begin{tabular}[t]{c}
+          \includegraphics[scale=0.25]{Images/frequency.pdf} 
+        \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Frequency of digrams}
+\begin{center}
+        \begin{tabular}[b]{c}
+          \includegraphics[scale=0.33]{Images/digraphs.pdf}
+        \end{tabular}
+  \end{center}
 \end{frame}
 
 \begin{frame}{Breaking the substitution cipher: example}
@@ -1104,7 +1125,7 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
     \]
     \color{black}
     \pause
-
+  \vspace{-0.3cm}
   \item Decryption: $\forall k\in\Kcal.\ \forall c\in\Ccal.\ D(k, c) = k \oplus c$
     \pause
     \color{vert}
@@ -1118,7 +1139,7 @@ Beamer style curtesy to Nadim Kobeissi: \url{https://appliedcryptography.page}
     \]
     \color{black}
     \pause
-
+    \vspace{-0.3cm}
   \item Correctness: $D(k, E(k, m)) = k \oplus (k\oplus m) = m$
   \end{itemize}
 \end{frame}
