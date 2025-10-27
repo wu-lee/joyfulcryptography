@@ -13,6 +13,7 @@
 \covertopicname{Post-Quantum Security}
 \coverwebsite{}
 
+\usepackage[absolute,overlay]{textpos} % put in preamble
 
 \colorlet{gris}{black!50!white}
 \def\engris#1{\textcolor{gris}{#1}}
@@ -45,6 +46,27 @@
 	\titlepage
 \end{frame}
 
+\begin{frame}{Recap}
+	\vspace{-0.5cm}
+
+  Action items:
+  \begin{itemize}
+  \item[$\checkmark$] Upload slides in advance
+\item[?] Question: DNSSEC vs Certs. DANE vs PKI? \envert{\footnotesize-- DNS-based Authentication of Named Entities} \\ \pause
+{\footnotesize\url{www.ipfire.org/blog/global-pki-considered-harmful-a-plaidoyer-for-using-dane}}\pause
+  \item[?] Question: Can quantum computers solve NP-hard problems? \envert{No and a little yes} \\ {\footnotesize Grover's algorithm provides a quadratic speedup for unstructured search. \\ \envert{Does not change the fundamental complexity class.}} \pause 
+  \item[?] Exercises: Those that struggle, did you read the short chapter and do the exercises here: \url{https://joyofcryptography.com/pdf/chap0.pdf}? \smallskip \pause
+  \item[$\checkmark$] \textbf{Office hours} are 11:15 Mon and Fri. 
+  {\footnotesize Talk with me after lecture, also BSc students. \\ 
+Specialization, e.g., Blockchain \& Distributed Ledgers, Security and Privacy for AI, Zero Knowledge.} \envert{Guest Lecture, Friday 31st of October.}\pause
+  \item[$\checkmark$] Request: Challenges in modern cryptography?  
+  %Trusted, distributed, fair and safe AI. Digital and Decentralized Identity. 
+  Post-quantum. \textbf{Protocols} \\ {\footnotesize Formalization of cryptography and \emph{protocols} in theorem provers, e.g. Lean.}
+  \end{itemize}
+
+  We finished "Why Go Post-Quantum?" and are at "Going Post-Quantum".
+
+\end{frame}
 
 \section{Why Go Post-Quantum?}
 
@@ -575,7 +597,7 @@
 			\begin{itemize}
 				\item \textbf{What is X-Wing?}
 				      \begin{itemize}
-					      \item Purpose-built hybrid KEM combining X25519 and ML-KEM-768\footnote{\url{https://appliedcryptography.page/paper/\#xwing-hybrid}}
+					      \item Purpose-built hybrid KEM combining X25519 and ML-KEM-768\footnote{\url{https://appliedcryptography.page/paper/\#xwing-hybrid}\\\!\qquad \url{https://edition.cnn.com/style/x-wing-model-star-wars-sold-intl-scli}}
 					      \item Designed to be ``the sensible choice for most applications''
 				      \end{itemize}
 				\item \textbf{Efficiency gains}:
@@ -593,6 +615,10 @@
 			\end{itemize}
 		\end{column}
 	\end{columns}
+
+\begin{textblock*}{5cm}(12.5cm,0.5cm)
+\includegraphics[width=3cm]{Images/xwing.png}
+\end{textblock*}
 \end{frame}
 
 \iffalse

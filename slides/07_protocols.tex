@@ -476,7 +476,7 @@
      & \vline & \onslide<5->{$\xleftarrow[\hspace{4cm}]{\Aenc(\Pk{A}, \Pair{N_A}{N_B})}$} & \vline \\
      & \vline & \onslide<6->{$\xrightarrow[\hspace{4cm}]{\Aenc(\Pk{B}, \Pair{N_B}{A})}$} & \vline \\
       \\
-      \onslide<7->{$^{k_{AB}\leftarrow \h(N_A, N_B)}$} & & \onslide<7->{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}
+      & \onslide<7->{$^{k_{AB}\leftarrow \h(N_A, N_B)}$} & & \onslide<7->{$^{k_{AB}\leftarrow \h(N_A, N_B)}$}
     \end{tabular}
   \end{center}
   \footnotesize{\engris{Roger M. Needham and Michael D. Schroeder. 1978. Using encryption for authentication in large networks of computers. Commun. ACM 21, 12 (Dec. 1978)}}
@@ -491,7 +491,7 @@
     \medskip{}
   \item \enbleu{Authentication:} If Bob has completed the  protocol, apparently with Alice, then Alice must have completed the protocol with Bob.  
     \medskip{}
-  \item \enbleu{Confidentiality:} Messages sent encrypted with the agreed key ($k\leftarrow \h(N_A,NB)$) remain secret.
+  \item \enbleu{Confidentiality:} Messages sent encrypted with the agreed key ($k\leftarrow \h(N_A,N_B)$) remain secret.
   \end{itemize}
 
 \end{frame}
@@ -594,8 +594,8 @@
         \onslide<3->{\footnotesize{$x\gets\mathbb Z_p$}} & \vline & & \vline \\
         & \vline & \onslide<4->{$\xrightarrow[\hspace{4cm}]{g,\ p,\ g^x}$} & \vline \\
         & \vline & & \vline & \onslide<5->{\footnotesize{$y\gets\mathbb Z_p$}} \\
-        & \vline & \onslide<6->{$\xleftarrow[\hspace{4cm}]{g^y, \envert{Cert_B}, \enbleu{E(g^{yx},} \envert{S(\mathsf{sk}_B}, (g^y, g^x)\envert{)}\enbleu{)}}$} & \vline \\
-        & \vline & \onslide<7->{$\xrightarrow[\hspace{4cm}]{\envert{Cert_A}, \enbleu{E(g^{yx},} \envert{S(\mathsf{sk}_A}, (g^x, g^y)\envert{)}\enbleu{)}}$} & \vline \\
+        & \vline & \onslide<6->{$\xleftarrow[\hspace{4cm}]{g^y, \envert{Cert_B}, \enbleu{E(\h(g^{yx}),} \envert{S(\mathsf{sk}_B}, (g^y, g^x)\envert{)}\enbleu{)}}$} & \vline \\
+        & \vline & \onslide<7->{$\xrightarrow[\hspace{4cm}]{\envert{Cert_A}, \enbleu{E(\h(g^{yx}),} \envert{S(\mathsf{sk}_A}, (g^x, g^y)\envert{)}\enbleu{)}}$} & \vline \\
       \end{tabular}
     \end{center}
     \onslide<2->{\begin{itemize}
@@ -607,6 +607,14 @@
     The StS ensures mutual authentication, key agreement, and forward secrecy
   \end{block}}
   
+\end{frame}
+
+\begin{frame}{In defense of Eve}
+  \vspace{-0.5cm}
+  \begin{center}
+\includegraphics[scale=0.4]{images/eve.png}
+  \end{center}
+    \footnotesize{\engris{XKCD:} \url{https://xkcd.com/177/}} \hfill \engris{Alice and Bob:} \url{https://cryptocouple.com/}
 \end{frame}
 
 \end{document}
